@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Контрольна робота — Правознавство 9 клас</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800&family=Open+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0b1727;--surface:#162235;--surface2:#1e3048;--surface3:#253a57;
+  --blue:#1565c0;--blue-light:#1e88e5;--blue-glow:rgba(21,101,192,.25);
+  --gold:#f5c518;--gold-dark:#c9a200;
+  --text:#dde6f3;--muted:#7a93b0;
+  --ok:#22c55e;--ok-bg:rgba(34,197,94,.12);
+  --err:#ef4444;--err-bg:rgba(239,68,68,.12);
+  --border:#243652;--radius:14px;--rad-sm:9px;
+  --shadow:0 4px 24px rgba(0,0,0,.45);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Open Sans',sans-serif;background:var(--navy);color:var(--text);min-height:100vh;font-size:15px;line-height:1.65}
+
+/* ── APP WRAPPER — fixed display area ── */
+#app{
+  max-width:900px;
+  margin:0 auto;
+  min-height:100vh;
+  position:relative;
+  background:var(--navy);
+  box-shadow:0 0 60px rgba(0,0,0,.6);
+}
+
+/* ── STICKY HEADER ── */
+#hdr{position:sticky;top:0;z-index:100;background:rgba(11,23,39,.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border);padding:10px 20px;display:flex;align-items:center;gap:14px;
+  transition:opacity .3s;width:100%}
+#hdr.hidden{display:none}
+#hdr-variant{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--gold);
+  background:rgba(245,197,24,.12);border:1px solid rgba(245,197,24,.3);border-radius:6px;padding:3px 10px;white-space:nowrap}
+#hdr-prog-wrap{flex:1;background:var(--surface2);border-radius:999px;height:8px;overflow:hidden}
+#hdr-prog-bar{height:100%;background:linear-gradient(90deg,var(--blue),var(--gold));border-radius:999px;
+  transition:width .5s ease;width:0%}
+#hdr-prog-label{font-size:12px;color:var(--muted);white-space:nowrap}
+#timer{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--text);
+  background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:4px 12px;
+  white-space:nowrap;min-width:72px;text-align:center}
+#timer.warn{color:var(--gold);border-color:var(--gold)}
+#timer.crit{color:var(--err);border-color:var(--err);animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.6}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ── SCREENS ── */
+.screen{display:none;padding:0 0 80px;min-height:calc(100vh - 54px)}
+.screen.active{display:block}
+
+/* ── WELCOME ── */
+#s-welcome{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:36px 20px;text-align:center;background:radial-gradient(ellipse at 50% 0%,rgba(21,101,192,.18) 0%,transparent 70%)}
+.welcome-emblem{font-size:56px;margin-bottom:16px;line-height:1}
+.welcome-title{font-family:'Montserrat',sans-serif;font-size:clamp(22px,5vw,34px);font-weight:800;
+  color:#fff;line-height:1.2;margin-bottom:8px}
+.welcome-sub{font-size:14px;color:var(--muted);margin-bottom:32px;max-width:520px}
+.welcome-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:28px 32px;max-width:540px;width:100%;margin-bottom:24px;text-align:left;box-shadow:var(--shadow)}
+.welcome-card h3{font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--gold);
+  text-transform:uppercase;letter-spacing:.07em;margin-bottom:14px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.info-item{background:var(--surface2);border-radius:var(--rad-sm);padding:12px 14px}
+.info-item .label{font-size:11px;color:var(--muted);margin-bottom:3px}
+.info-item .val{font-family:'Montserrat',sans-serif;font-weight:700;font-size:15px;color:var(--text)}
+.name-wrap{max-width:540px;width:100%;margin-bottom:20px}
+.name-wrap label{display:block;font-size:13px;color:var(--muted);margin-bottom:8px}
+.name-wrap input{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--rad-sm);
+  padding:13px 16px;font-size:15px;color:var(--text);font-family:'Open Sans',sans-serif;outline:none;transition:.2s}
+.name-wrap input:focus{border-color:var(--blue-light);box-shadow:0 0 0 3px var(--blue-glow)}
+.name-wrap input::placeholder{color:var(--muted)}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;
+  border:none;border-radius:var(--rad-sm);cursor:pointer;transition:.18s;padding:13px 28px}
+.btn-primary{background:linear-gradient(135deg,var(--blue),var(--blue-light));color:#fff;
+  box-shadow:0 4px 16px rgba(21,101,192,.4)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 22px rgba(21,101,192,.55)}
+.btn-primary:active{transform:none}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{border-color:var(--text);color:var(--text)}
+.btn-gold{background:var(--gold);color:#1a1200;box-shadow:0 4px 16px rgba(245,197,24,.3)}
+.btn-gold:hover{background:var(--gold-dark);transform:translateY(-1px)}
+.btn-sm{padding:8px 18px;font-size:13px}
+.btn-full{width:100%}
+
+/* ── SECTION HEADER ── */
+.sec-header{padding:28px 20px 18px;max-width:100%;margin:0 auto}
+.sec-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(245,197,24,.1);
+  border:1px solid rgba(245,197,24,.3);border-radius:999px;padding:4px 14px;margin-bottom:14px}
+.sec-badge .icon{font-size:16px}
+.sec-badge span{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;color:var(--gold);text-transform:uppercase;letter-spacing:.08em}
+.sec-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:clamp(18px,4vw,26px);color:#fff;margin-bottom:6px}
+.sec-desc{font-size:13px;color:var(--muted);max-width:620px}
+.sec-pts{display:inline-block;margin-left:10px;background:var(--surface2);border-radius:6px;
+  padding:2px 10px;font-size:12px;color:var(--gold);font-weight:600;font-family:'Montserrat',sans-serif}
+
+/* ── QUESTION CARD ── */
+.q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:24px 28px;max-width:100%;margin:0 20px 16px;box-shadow:var(--shadow)}
+.q-num{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px}
+.q-text{font-size:15px;color:var(--text);line-height:1.7;margin-bottom:20px;white-space:pre-line}
+.q-text.case-text{background:var(--surface2);border-left:3px solid var(--blue-light);
+  border-radius:0 var(--rad-sm) var(--rad-sm) 0;padding:14px 16px;margin-bottom:18px;font-size:14px}
+
+/* ── OPTIONS ── */
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{display:flex;align-items:flex-start;gap:12px;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--rad-sm);padding:13px 16px;cursor:pointer;transition:.18s;user-select:none}
+.opt:hover:not(.locked){border-color:var(--blue-light);background:rgba(30,136,229,.1)}
+.opt-letter{flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--surface3);
+  display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;
+  font-weight:700;font-size:12px;color:var(--muted);transition:.18s}
+.opt-text{font-size:14px;line-height:1.5;padding-top:1px}
+.opt.selected{border-color:var(--blue-light);background:rgba(30,136,229,.12)}
+.opt.selected .opt-letter{background:var(--blue);color:#fff}
+.opt.correct{border-color:var(--ok)!important;background:var(--ok-bg)!important}
+.opt.correct .opt-letter{background:var(--ok);color:#fff}
+.opt.wrong{border-color:var(--err)!important;background:var(--err-bg)!important}
+.opt.wrong .opt-letter{background:var(--err);color:#fff}
+.opt.locked{cursor:default}
+
+/* ── EXPLANATION ── */
+.explanation{display:none;margin-top:14px;padding:14px 16px;background:rgba(21,101,192,.12);
+  border:1px solid rgba(30,136,229,.3);border-radius:var(--rad-sm);font-size:13.5px;line-height:1.6}
+.explanation.show{display:block;animation:fadeIn .3s}
+.explanation .expl-hdr{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;
+  color:var(--blue-light);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+
+/* ── NAV ── */
+.q-nav{margin:0 20px;padding:8px 0;display:flex;justify-content:flex-end;gap:10px}
+.section-nav{margin:24px 20px 0;padding:0 0 8px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+
+/* ── MATCHING ── */
+.match-container{max-width:100%;margin:0;padding:0 20px 8px}
+.match-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+@media(max-width:600px){.match-grid{grid-template-columns:1fr}}
+.match-col-label{font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
+.match-item{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--rad-sm);
+  padding:12px 14px;cursor:pointer;transition:.18s;font-size:13.5px;line-height:1.5;min-height:54px;
+  display:flex;align-items:center;gap:10px;user-select:none}
+.match-item:hover:not(.locked){border-color:var(--blue-light)}
+.match-item .pair-badge{flex-shrink:0;width:22px;height:22px;border-radius:50%;font-family:'Montserrat',sans-serif;
+  font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center}
+.match-item.active-left{border-color:var(--gold);background:rgba(245,197,24,.1)}
+.match-item.paired{cursor:default}
+.match-item.correct-pair{border-color:var(--ok)!important;background:var(--ok-bg)!important}
+.match-item.wrong-pair{border-color:var(--err)!important;background:var(--err-bg)!important}
+.match-item.locked{cursor:default}
+.match-legend{background:var(--surface2);border-radius:var(--rad-sm);padding:12px 14px;
+  font-size:13px;color:var(--muted);margin-bottom:16px}
+.match-legend strong{color:var(--text)}
+
+/* ── OPEN / CASES ── */
+.open-area{width:100%;min-height:110px;background:var(--surface2);border:1.5px solid var(--border);
+  border-radius:var(--rad-sm);padding:12px 14px;font-size:14px;color:var(--text);
+  font-family:'Open Sans',sans-serif;resize:vertical;outline:none;transition:.2s;line-height:1.6}
+.open-area:focus{border-color:var(--blue-light);box-shadow:0 0 0 3px var(--blue-glow)}
+.open-area::placeholder{color:var(--muted)}
+.model-block{display:none;margin-top:12px;animation:fadeIn .3s}
+.model-block.show{display:block}
+.model-hdr{font-family:'Montserrat',sans-serif;font-weight:700;font-size:11px;
+  text-transform:uppercase;letter-spacing:.1em;color:var(--ok);margin-bottom:8px}
+.model-text{background:var(--ok-bg);border:1px solid rgba(34,197,94,.2);border-radius:var(--rad-sm);
+  padding:14px 16px;font-size:13.5px;line-height:1.7;color:var(--text);margin-bottom:12px;white-space:pre-line}
+.criteria-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.criteria-list li{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 12px;
+  background:var(--surface2);border:1px solid var(--border);border-radius:var(--rad-sm);
+  font-size:13.5px;transition:.15s;user-select:none}
+.criteria-list li:hover{border-color:var(--blue-light)}
+.criteria-list li.checked{background:var(--ok-bg);border-color:var(--ok);color:var(--text)}
+.criteria-list li .chk-icon{flex-shrink:0;width:20px;height:20px;border-radius:50%;border:2px solid var(--muted);
+  display:flex;align-items:center;justify-content:center;font-size:11px;transition:.15s}
+.criteria-list li.checked .chk-icon{border-color:var(--ok);background:var(--ok);color:#fff}
+.criteria-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:12px;
+  color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
+
+/* ── RESULTS ── */
+#s-results{padding:0 0 80px}
+.results-hero{text-align:center;padding:48px 20px 32px;background:radial-gradient(ellipse at 50% 0%,rgba(21,101,192,.2) 0%,transparent 65%)}
+.results-grade-ring{width:130px;height:130px;border-radius:50%;background:var(--surface);
+  border:4px solid var(--gold);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;margin:0 auto 20px;box-shadow:0 0 40px rgba(245,197,24,.25)}
+.results-grade-num{font-family:'Montserrat',sans-serif;font-weight:800;font-size:42px;color:var(--gold);line-height:1}
+.results-grade-of{font-size:11px;color:var(--muted);margin-top:2px}
+.results-name{font-family:'Montserrat',sans-serif;font-size:22px;font-weight:700;color:#fff;margin-bottom:4px}
+.results-meta{font-size:13px;color:var(--muted);margin-bottom:28px}
+.results-breakdown{max-width:100%;margin:0 0 28px;padding:0 20px}
+.breakdown-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media(min-width:580px){.breakdown-grid{grid-template-columns:repeat(4,1fr)}}
+.breakdown-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  padding:16px 14px;text-align:center}
+.breakdown-card .bc-label{font-size:11px;color:var(--muted);margin-bottom:6px}
+.breakdown-card .bc-pts{font-family:'Montserrat',sans-serif;font-weight:800;font-size:24px}
+.breakdown-card .bc-of{font-size:12px;color:var(--muted)}
+.scale-block{max-width:100%;margin:0 0 24px;padding:0 20px}
+.scale-block h3{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.scale-bar{display:flex;border-radius:var(--rad-sm);overflow:hidden;height:32px;margin-bottom:8px}
+.scale-seg{flex:1;display:flex;align-items:center;justify-content:center;font-family:'Montserrat',sans-serif;
+  font-weight:700;font-size:12px;transition:.3s}
+.scale-seg.active{transform:scaleY(1.15);border-radius:var(--rad-sm);z-index:1}
+.recs-block{max-width:100%;margin:0 0 28px;padding:0 20px}
+.recs-block h3{font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--muted);
+  text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px}
+.rec-item{display:flex;gap:12px;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--rad-sm);padding:12px 14px;margin-bottom:8px;font-size:13.5px}
+.rec-item .ri-icon{font-size:18px;flex-shrink:0}
+.share-block{max-width:100%;margin:0;padding:0 20px}
+.share-text-area{width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:var(--rad-sm);padding:14px;font-size:13px;color:var(--muted);
+  font-family:'Open Sans',sans-serif;resize:none;outline:none;min-height:150px}
+
+/* ── JOURNAL ── */
+#journal-modal{display:none;position:fixed;inset:0;z-index:200;background:rgba(11,23,39,.85);
+  backdrop-filter:blur(8px);align-items:flex-start;justify-content:center;padding:20px;overflow-y:auto}
+#journal-modal.open{display:flex}
+.journal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);
+  max-width:780px;width:100%;box-shadow:var(--shadow);margin:auto}
+.journal-hdr{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.journal-hdr h2{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px}
+.journal-body{padding:20px 24px;max-height:60vh;overflow-y:auto}
+.journal-row{display:grid;grid-template-columns:1fr auto auto auto;gap:12px;align-items:center;
+  padding:10px 12px;background:var(--surface2);border-radius:var(--rad-sm);margin-bottom:8px;font-size:13.5px}
+.journal-row .jr-name{font-weight:600}
+.journal-row .jr-var{font-size:12px;color:var(--gold);background:rgba(245,197,24,.1);
+  border-radius:5px;padding:2px 8px;font-family:'Montserrat',sans-serif;font-weight:700}
+.journal-row .jr-pts{font-family:'Montserrat',sans-serif;font-weight:700;color:var(--text)}
+.journal-row .jr-grade{font-family:'Montserrat',sans-serif;font-weight:800;font-size:18px;color:var(--gold)}
+.journal-empty{text-align:center;padding:40px;color:var(--muted);font-size:14px}
+.journal-ftr{padding:16px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+/* ── TEACHER BTN ── */
+#teacher-btn{position:fixed;bottom:20px;right:20px;z-index:50;font-size:12px;padding:9px 16px}
+#teacher-btn.hidden{display:none}
+
+/* ── MISC ── */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+.tag{display:inline-block;font-size:12px;font-family:'Montserrat',sans-serif;font-weight:700;
+  border-radius:5px;padding:2px 9px}
+.tag-blue{background:rgba(30,136,229,.15);color:var(--blue-light)}
+.tag-ok{background:var(--ok-bg);color:var(--ok)}
+.tag-err{background:var(--err-bg);color:var(--err)}
+.center{text-align:center}
+.pad{padding:0 20px}
+
+/* ── RESPONSIVE ── */
+@media(max-width:600px){
+  #app{box-shadow:none}
+  .q-card{padding:14px 12px;border-radius:10px;margin:0 12px 12px}
+  .sec-header{padding:18px 12px 12px}
+  .section-nav{margin:16px 12px 0}
+  .match-container{padding:0 12px 8px}
+  .welcome-card{padding:16px 14px}
+  .info-grid{grid-template-columns:1fr 1fr}
+  #hdr{padding:8px 12px;gap:8px}
+  .results-breakdown,.scale-block,.recs-block,.share-block{padding:0 12px}
+  .journal-row{grid-template-columns:1fr auto auto}
+  .journal-row .jr-grade{display:none}
+}
+@media(min-width:900px){
+  body{background:linear-gradient(135deg,#060d18 0%,#0b1727 50%,#060d18 100%)}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ STICKY HEADER ══ -->
+<div id="hdr" class="hidden">
+  <div id="hdr-variant">Варіант —</div>
+  <div id="hdr-prog-wrap"><div id="hdr-prog-bar"></div></div>
+  <div id="hdr-prog-label">0 / 25 балів</div>
+  <div id="timer">40:00</div>
+</div>
+
+<!-- ══ WELCOME ══ -->
+<div id="s-welcome" class="screen active">
+  <div class="welcome-emblem" id="welcome-emblem">⚖️</div>
+  <h1 class="welcome-title" id="welcome-title">Контрольна робота<br>з правознавства</h1>
+  <p class="welcome-sub" id="welcome-sub">9 клас · Тема: «Неповнолітні як суб'єкти цивільних, сімейних, трудових, адміністративних і кримінальних правовідносин»</p>
+
+  <div class="welcome-card" id="card-structure">
+    <h3>📋 Структура роботи</h3>
+    <div class="info-grid">
+      <div class="info-item"><div class="label">Частина 1</div><div class="val">Тести · 8 балів</div></div>
+      <div class="info-item"><div class="label">Частина 2</div><div class="val">Відповідність · 5 балів</div></div>
+      <div class="info-item"><div class="label">Частина 3</div><div class="val">Відкриті питання · 5 балів</div></div>
+      <div class="info-item"><div class="label">Частина 4</div><div class="val">Кейси · 7 балів</div></div>
+    </div>
+  </div>
+
+  <div class="welcome-card" id="card-instructions" style="margin-top:-8px">
+    <h3>⚠️ Важлива інструкція</h3>
+    <ul style="padding-left:18px;font-size:14px;color:var(--muted);line-height:2">
+      <li>Варіант (А або Б) визначається <strong style="color:var(--text)">автоматично випадково</strong></li>
+      <li>Таймер <strong style="color:var(--text)">40 хвилин</strong> — стежте за часом</li>
+      <li>Тести перевіряються автоматично з поясненням одразу після вибору</li>
+      <li>Відповідність перевіряється після завершення роботи</li>
+      <li>Для відкритих питань і кейсів — напишіть відповідь, натисніть <strong style="color:var(--text)">«Надіслати відповідь»</strong>, потім переглядайте зразок</li>
+      <li>Після завершення — скопіюйте звіт і надішліть вчителю</li>
+    </ul>
+  </div>
+
+  <div class="name-wrap" id="wrap-name">
+    <label for="student-name">Прізвище та ім'я (обов'язково):</label>
+    <input type="text" id="student-name" placeholder="Наприклад: Шевченко Тарас" autocomplete="name" maxlength="80">
+  </div>
+  <div class="name-wrap" id="wrap-class">
+    <label for="student-class">Клас (обов'язково):</label>
+    <input type="text" id="student-class" placeholder="Наприклад: 9-А" maxlength="20">
+  </div>
+
+  <button class="btn btn-primary" id="start-btn" onclick="startQuiz()">
+    🚀 Почати роботу
+  </button>
+  <p id="welcome-hint" style="margin-top:14px;font-size:12px;color:var(--muted)">Варіант буде визначено після натискання кнопки</p>
+</div>
+
+<!-- ══ PART 1 — TESTS ══ -->
+<div id="s-part1" class="screen">
+  <div class="sec-header pad">
+    <div class="sec-badge"><span class="icon">📝</span><span>Частина 1 з 4</span></div>
+    <h2 class="sec-title">Тестові завдання <span class="sec-pts">8 балів</span></h2>
+    <p class="sec-desc">Оберіть одну правильну відповідь. Після вибору одразу побачите результат і пояснення.</p>
+  </div>
+  <div id="tests-container" class="pad"></div>
+  <div class="section-nav pad">
+    <div style="font-size:13px;color:var(--muted)">Відповідайте на всі 8 питань, потім натискайте «Далі»</div>
+    <button class="btn btn-primary" id="p1-next" onclick="goTo('part2')" disabled>Далі →</button>
+  </div>
+</div>
+
+<!-- ══ PART 2 — MATCHING ══ -->
+<div id="s-part2" class="screen">
+  <div class="sec-header pad">
+    <div class="sec-badge"><span class="icon">🔗</span><span>Частина 2 з 4</span></div>
+    <h2 class="sec-title">Завдання на відповідність <span class="sec-pts">5 балів</span></h2>
+    <p class="sec-desc" id="match-desc">Встановіть 5 логічних пар. Натисніть на елемент зліва, потім на відповідний елемент справа.</p>
+  </div>
+  <div class="match-container pad">
+    <div class="match-legend" id="match-legend"></div>
+    <div class="match-grid">
+      <div><div class="match-col-label" id="match-left-label">Ліва колонка</div><div id="match-left"></div></div>
+      <div><div class="match-col-label" id="match-right-label">Права колонка</div><div id="match-right"></div></div>
+    </div>
+    <div id="match-status" style="font-size:13px;color:var(--muted);margin-bottom:12px;padding:8px 12px;background:var(--surface2);border-radius:var(--rad-sm)">
+      Пар встановлено: <strong id="match-pairs-count" style="color:var(--gold)">0</strong> / 5 — оберіть всі пари та натисніть «Далі»
+    </div>
+    <div id="match-result" style="display:none;margin-bottom:16px"></div>
+  </div>
+  <div class="section-nav pad">
+    <button class="btn btn-ghost btn-sm" onclick="goTo('part1')">← Назад</button>
+    <button class="btn btn-primary" id="p2-next" onclick="goTo('part3')" disabled>Далі →</button>
+  </div>
+</div>
+
+<!-- ══ PART 3 — OPEN QUESTIONS ══ -->
+<div id="s-part3" class="screen">
+  <div class="sec-header pad">
+    <div class="sec-badge"><span class="icon">✍️</span><span>Частина 3 з 4</span></div>
+    <h2 class="sec-title">Відкриті питання <span class="sec-pts">5 балів</span></h2>
+    <p class="sec-desc">Дайте лаконічну, але повну відповідь (3–5 речень). Запишіть відповідь і натисніть «Надіслати відповідь».</p>
+  </div>
+  <div id="open-container" class="pad"></div>
+  <div class="section-nav pad">
+    <button class="btn btn-ghost btn-sm" onclick="goTo('part2')">← Назад</button>
+    <button class="btn btn-primary" onclick="goTo('part4')">Далі →</button>
+  </div>
+</div>
+
+<!-- ══ PART 4 — CASES ══ -->
+<div id="s-part4" class="screen">
+  <div class="sec-header pad">
+    <div class="sec-badge"><span class="icon">⚖️</span><span>Частина 4 з 4</span></div>
+    <h2 class="sec-title">Практичні ситуації (Кейси) <span class="sec-pts">7 балів</span></h2>
+    <p class="sec-desc">Проаналізуйте ситуації та дайте правову оцінку. Запишіть відповідь і натисніть «Надіслати відповідь».</p>
+  </div>
+  <div id="cases-container" class="pad"></div>
+  <div class="section-nav pad">
+    <button class="btn btn-ghost btn-sm" onclick="goTo('part3')">← Назад</button>
+    <button class="btn btn-gold" onclick="submitAll()" style="font-size:16px;padding:15px 36px">🏁 Завершити роботу</button>
+  </div>
+</div>
+
+<!-- ══ RESULTS ══ -->
+<div id="s-results" class="screen">
+  <div class="results-hero">
+    <div class="results-grade-ring">
+      <div class="results-grade-num" id="res-grade">—</div>
+      <div class="results-grade-of">з 12 балів</div>
+    </div>
+    <div class="results-name" id="res-name"></div>
+    <div class="results-meta" id="res-meta"></div>
+  </div>
+
+  <div class="results-breakdown">
+    <div class="breakdown-grid">
+      <div class="breakdown-card"><div class="bc-label">Частина 1 · Тести</div><div class="bc-pts" id="r-p1">—</div><div class="bc-of">з 8 балів</div></div>
+      <div class="breakdown-card"><div class="bc-label">Частина 2 · Відповідність</div><div class="bc-pts" id="r-p2">—</div><div class="bc-of">з 5 балів</div></div>
+      <div class="breakdown-card"><div class="bc-label">Частина 3 · Відкриті</div><div class="bc-pts" id="r-p3">—</div><div class="bc-of">з 5 балів</div></div>
+      <div class="breakdown-card"><div class="bc-label">Частина 4 · Кейси</div><div class="bc-pts" id="r-p4">—</div><div class="bc-of">з 7 балів</div></div>
+    </div>
+  </div>
+
+  <div class="scale-block">
+    <h3>Шкала оцінювання МОН (12-бальна)</h3>
+    <div class="scale-bar" id="scale-bar"></div>
+    <p style="font-size:12px;color:var(--muted);text-align:center">Ваша оцінка виділена</p>
+  </div>
+
+  <div class="recs-block">
+    <h3>💡 Рекомендації для повторення</h3>
+    <div id="recs-list"></div>
+  </div>
+
+  <div class="share-block">
+    <!-- Telegram send status -->
+    <div id="tg-status-block" style="
+      background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:20px 24px;margin-bottom:16px;
+      display:flex;align-items:center;gap:16px">
+      <div id="tg-icon" style="font-size:32px;flex-shrink:0">📡</div>
+      <div style="flex:1">
+        <div id="tg-title" style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:14px;color:var(--text);margin-bottom:4px">
+          Надсилання звіту вчителю…
+        </div>
+        <div id="tg-desc" style="font-size:13px;color:var(--muted)">
+          Зачекайте, звіт надсилається автоматично
+        </div>
+      </div>
+      <div id="tg-spinner" style="width:24px;height:24px;border:3px solid var(--border);border-top-color:var(--blue-light);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+    </div>
+    <!-- Fallback: copy manually -->
+    <div id="tg-fallback" style="display:none">
+      <h3 style="font-family:'Montserrat',sans-serif;font-weight:700;font-size:13px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px">
+        📋 Резервне копіювання звіту
+      </h3>
+      <textarea class="share-text-area" id="share-text" readonly></textarea>
+      <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary btn-sm" onclick="copyResult()">📋 Скопіювати текст</button>
+        <button class="btn btn-ghost btn-sm" onclick="printResult()">🖨️ Роздрукувати</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /#app -->
+
+<!-- ══ TEACHER JOURNAL MODAL ══ -->
+<div id="journal-modal">
+  <div class="journal-box">
+    <div class="journal-hdr">
+      <h2>📊 Журнал результатів</h2>
+      <button class="btn btn-ghost btn-sm" onclick="closeJournal()">✕ Закрити</button>
+    </div>
+    <div class="journal-body" id="journal-body"></div>
+    <div class="journal-ftr">
+      <button class="btn btn-ghost btn-sm" onclick="clearJournal()">🗑 Очистити журнал</button>
+      <button class="btn btn-primary btn-sm" onclick="exportJournal()">📋 Скопіювати журнал</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ TEACHER FLOATING BUTTON ══ -->
+<button class="btn btn-ghost btn-sm hidden" id="teacher-btn" onclick="openJournal()">🔑 Журнал вчителя</button>
+
+<script>
+/* ════════════════════════════════
+   DATA — VARIANT A
+════════════════════════════════ */
+const VARIANT_A = {
+  label: 'Варіант А',
+
+  tests: [
+    {
+      q: '15-річний Олег за зароблені під час літніх канікул гроші придбав дорогий велосипед. Батьки вимагають повернути товар до магазину, оскільки згоди на покупку не давали.\n\nЧи мають право батьки скасувати цю угоду?',
+      opts: ['Ні, оскільки неповнолітні віком від 14 до 18 років мають право самостійно розпоряджатися своїм заробітком.','Так, бо будь-які угоди неповнолітніх до 18 років потребують письмової згоди батьків.','Ні, якщо Олег доведе, що велосипед необхідний йому для поїздок до школи.','Так, оскільки правочин виходить за межі дрібного побутового, незалежно від джерела коштів.'],
+      correct: 0,
+      expl: 'Неповнолітні від 14 до 18 років мають право самостійно розпоряджатися своїм заробітком або стипендією — без будь-якої згоди батьків (ст. 32 ЦКУ). Батьки не можуть скасувати таку угоду.'
+    },
+    {
+      q: '15-річна Марія влаштувалася на роботу під час літніх канікул (за згодою батьків). Яка максимальна тривалість її робочого тижня згідно з трудовим законодавством?',
+      opts: ['36 годин','24 години','12 годин','40 годин'],
+      correct: 1,
+      expl: 'Для осіб від 15 до 16 років у період канікул робочий тиждень не може перевищувати 24 години. Для 16–18 років — 36 годин. Для дорослих — 40 годин (ст. 51 КЗпП).'
+    },
+    {
+      q: '16-річний Максим перейшов дорогу на червоне світло, що зафіксувала поліція. Самостійного заробітку хлопець не має.\n\nЯке адміністративне стягнення може бути до нього застосоване?',
+      opts: ['Штраф, який сплатять його батьки.','Попередження або догана.','Громадські роботи.','Адміністративний арешт до 15 діб.'],
+      correct: 1,
+      expl: 'До неповнолітніх 16–18 років без самостійного заробітку застосовуються заходи впливу — попередження або догана. Штраф накладається лише якщо є власний заробіток. Арешт до неповнолітніх не застосовується.'
+    },
+    {
+      q: 'В якому з цих випадків особа, що не досягла 18-річного віку, набуває повної цивільної дієздатності?',
+      opts: ['З моменту отримання ID-картки у 14 років.','Якщо 16-річна особа записана матір\'ю або батьком дитини.','Якщо 15-річна особа влаштувалася на роботу за трудовим договором.','За бажанням самої особи після досягнення 16 років та письмової заяви.'],
+      correct: 1,
+      expl: 'Одна з підстав для надання повної дієздатності до 18 років — реєстрація особи матір\'ю або батьком дитини (ст. 35 ЦКУ). Трудовий договір — підстава лише з 16 р. і лише для «часткової» дієздатності щодо праці.'
+    },
+    {
+      q: 'За який із вказаних злочинів кримінальна відповідальність настає з 14 років?',
+      opts: ['Шахрайство.','Ухилення від сплати податків.','Умисне тяжке тілесне ушкодження.','Порушення правил дорожнього руху.'],
+      correct: 2,
+      expl: 'Умисне тяжке тілесне ушкодження (ст. 121 ККУ) входить до переліку злочинів зі зниженим віком відповідальності — з 14 років (ст. 22 ККУ). Шахрайство — лише з 16 р.'
+    },
+    {
+      q: 'Роботодавець вирішив звільнити 17-річного працівника у зв\'язку зі скороченням штату. Згода якого органу є обов\'язковою для законності такого звільнення?',
+      opts: ['Згода батьків або піклувальників.','Згода суду.','Згода служби у справах дітей (крім згоди профспілки).','Згода поліції ювенальної превенції.'],
+      correct: 2,
+      expl: 'Звільнення неповнолітнього з ініціативи роботодавця допускається лише за попередньою згодою районної (міської) служби у справах дітей (ст. 198 КЗпП). Без цієї згоди звільнення є незаконним.'
+    },
+    {
+      q: 'Дитина віком 10 років у сімейних правовідносинах має право:',
+      opts: ['Самостійно укладати договір про управління своїм майном.','Бути вислуханою при вирішенні спору між батьками щодо її місця проживання.','Самостійно звертатися до суду для позбавлення батьків їхніх прав.','Відмовитися від утримання з боку батьків.'],
+      correct: 1,
+      expl: 'Дитина від 10 років має право бути вислуханою судом при вирішенні будь-яких питань, що стосуються її особистого та сімейного життя, зокрема місця проживання (ст. 171 СКУ).'
+    },
+    {
+      q: 'До якого виду покарань НЕ може бути засуджений неповнолітній, який вчинив злочин?',
+      opts: ['Штраф.','Довічне позбавлення волі.','Громадські роботи.','Позбавлення волі на певний строк.'],
+      correct: 1,
+      expl: 'Довічне позбавлення волі до осіб, які вчинили злочин у неповнолітньому віці, не застосовується ніколи (ст. 64 ККУ). Максимум — 15 років для особливо тяжких злочинів.'
+    }
+  ],
+
+  matchLeft: ['0 – 14 років','З 14 років','З 15 років','З 16 років','З 18 років'],
+  matchRight: [
+    'А) Повна адміністративна відповідальність на загальних підставах (як дорослого).',
+    'Б) Загальний вік настання кримінальної та адміністративної відповідальності; право самостійно змінити своє прізвище.',
+    'В) Наявність лише часткової цивільної дієздатності (право вчиняти лише дрібні побутові угоди).',
+    'Г) Право влаштуватися на роботу на загальних підставах без обов\'язкової згоди батьків (за винятком шкідливих умов).',
+    'Д) Вік, з якого настає кримінальна відповідальність за деякі найтяжчі злочини (вбивство, крадіжка); право самостійно розпоряджатися стипендією.'
+  ],
+  matchCorrect: [2, 4, 3, 1, 0],
+  matchLeftLabel: 'Вік особи',
+  matchRightLabel: 'Обсяг прав / відповідальності',
+  matchLegend: '<strong>Завдання:</strong> Встановіть відповідність між <strong>віком особи</strong> (ліворуч) та <strong>обсягом її прав або відповідальності</strong> (праворуч). Утворіть 5 логічних пар.',
+
+  open: [
+    {
+      q: 'Що таке «дрібний побутовий правочин»? Наведіть один приклад.',
+      model: 'Дрібний побутовий правочин — це угода невисокої вартості, яка задовольняє звичайні щоденні потреби особи та виконується негайно в момент укладення. Наприклад: купівля хліба в магазині, придбання квитка на автобус, покупка зошита або ручки. Такі правочини можуть самостійно вчиняти навіть малолітні особи (до 14 років).',
+      criteria: ['Дано визначення (невисока вартість + побутові потреби)','Вказано, що виконується одразу','Наведено конкретний приклад','Згадано, що доступно малолітнім (до 14 р.)']
+    },
+    {
+      q: 'Поясніть різницю між частковою та неповною цивільною дієздатністю неповнолітніх.',
+      model: 'Часткова цивільна дієздатність — це обсяг прав осіб від 6 до 14 років (малолітніх): вони можуть лише самостійно вчиняти дрібні побутові правочини. Неповна дієздатність — це обсяг прав осіб від 14 до 18 років: вони можуть самостійно розпоряджатися заробітком/стипендією, здійснювати авторські права, вкладати кошти в банк. Великі угоди (нерухомість, транспорт) потребують згоди батьків.',
+      criteria: ['Пояснено часткову дієздатність (до 14 р., лише дрібні угоди)','Пояснено неповну дієздатність (14–18 р.)','Наведено конкретні права при неповній дієздатності','Зазначено, що великі угоди потребують згоди']
+    },
+    {
+      q: 'Що таке примусові заходи виховного характеру і коли вони застосовуються до неповнолітніх?',
+      model: 'Примусові заходи виховного характеру — це заходи, які суд може застосувати до неповнолітнього замість кримінального покарання, якщо вчинений злочин невеликої тяжкості або особа вперше порушила закон. До них належать: застереження, передача під нагляд батьків, обмеження дозвілля, направлення до спеціальної навчально-виховної установи. Мета — виправлення без судимості.',
+      criteria: ['Дано визначення (заходи замість покарання)','Вказано умови (невелика тяжкість або вперше)','Наведено щонайменше 2 конкретні заходи','Зазначено мету — виправлення без судимості']
+    },
+    {
+      q: 'Назвіть щонайменше три гарантії (пільги), які надає держава неповнолітнім працівникам у трудовому праві.',
+      model: 'Держава надає неповнолітнім такі гарантії: 1) скорочений робочий час (до 36 год/тижд. для 16–18 р., до 24 год для 15–16 р.) зі збереженням повної зарплати; 2) подовжена щорічна відпустка — 31 календарний день, яка надається влітку; 3) заборона нічних, надурочних, важких і шкідливих робіт; 4) обов\'язковий медичний огляд при прийомі та щорічно; 5) заборона встановлення випробувального терміну.',
+      criteria: ['Названо скорочений робочий час (з цифрами)','Названо подовжену відпустку (31 день)','Названо заборону нічних/надурочних робіт','Названо медогляд або заборону випробування']
+    },
+    {
+      q: 'За яких виняткових обставин суд може надати право на шлюб особі, якій виповнилося 16 років?',
+      model: 'Суд може надати право на шлюб особі, яка досягла 16 років, якщо буде доведено, що це відповідає її інтересам. Типові підстави: вагітність нареченої, народження спільної дитини, тяжка хвороба одного з партнерів. Суд враховує рівень зрілості особи, її бажання та думку батьків. Рішення суду замінює згоду батьків.',
+      criteria: ['Зазначено вік — з 16 років','Вказано, що рішення приймає суд','Наведено конкретну підставу (вагітність або народження дитини)','Вказано, що суд враховує інтереси особи']
+    }
+  ],
+
+  cases: [
+    {
+      title: 'Кейс 1 — Цивільне право',
+      q: '13-річна Оленка взяла вдома 1000 гривень і купила в магазині косметику. Мати вимагає від продавця повернути гроші, бо дівчинка ще мала для таких покупок.\n\nПитання: Чи зобов\'язаний магазин повернути гроші? Чому?',
+      model: 'Так, магазин зобов\'язаний повернути гроші. 13-річна Оленка є малолітньою особою і має лише часткову цивільну дієздатність — може самостійно вчиняти лише дрібні побутові правочини. Купівля косметики на 1000 грн явно виходить за ці межі. Угода є недійсною: магазин повертає гроші, а мати повертає косметику (ст. 31 ЦКУ).',
+      checks: ['Визначив(ла) правовий статус Оленки (малолітня, до 14 р.)','Пояснив(ла) обмеження дієздатності (лише дрібні побутові)','Зробив(ла) висновок: угода є недійсною','Вказав(ла) наслідки: гроші повертаються, косметика — магазину']
+    },
+    {
+      title: 'Кейс 2 — Трудове право',
+      q: '17-річний студент коледжу влаштувався вантажником на склад нічного супермаркету. Його зміна триває з 22:00 до 06:00.\n\nПитання: Які порушення трудового законодавства допустив роботодавець?',
+      model: 'Роботодавець допустив щонайменше два грубих порушення: 1) Залучення неповнолітнього до нічних робіт (з 22:00 до 6:00) — прямо заборонено ст. 192 КЗпП; 2) Залучення до важких робіт (вантажник) — також заборонено для осіб до 18 років. Додатково: тривалість зміни може перевищувати денну норму для 17-річних. Роботодавець несе адміністративну відповідальність.',
+      checks: ['Визначив(ла) порушення: нічна робота (з 22:00)','Визначив(ла) порушення: важка робота (вантажник)','Посилається на заборону для неповнолітніх до 18 р.','Вказав(ла) на відповідальність роботодавця']
+    },
+    {
+      title: 'Кейс 3 — Сімейне право',
+      q: 'Батьки 12-річного Антона розлучаються. Мати хоче, щоб син жив з нею в іншому місті, а батько наполягає, щоб він залишився з ним. Суд розглядає справу без участі дитини.\n\nПитання: Чи порушені права Антона в цій ситуації? Поясніть.',
+      model: 'Так, права Антона порушені. Дитина від 10 років має право бути вислуханою судом при вирішенні спору про місце проживання (ст. 171 СКУ). 12-річний Антон має таке право, і суд зобов\'язаний його вислухати та врахувати думку. Розгляд справи без участі дитини є порушенням її процесуальних прав. Суд повинен залучити Антона до засідання (безпосередньо або через орган опіки).',
+      checks: ['Визначив(ла), що права порушені','Назвав(ла) право дитини від 10 р. бути вислуханою','Вказав(ла) обов\'язок суду врахувати думку дитини','Запропонував(ла) правильне вирішення ситуації']
+    },
+    {
+      title: 'Кейс 4 — Адміністративне/Кримінальне право',
+      q: '15-річний Сергій заради жарту зателефонував до поліції і повідомив про «замінування» школи. Евакуація зірвала уроки.\n\nПитання: До якого виду відповідальності буде притягнуто Сергія та його батьків?',
+      model: 'Сергій буде притягнутий до кримінальної відповідальності. Завідомо неправдиве повідомлення про загрозу безпеці — злочин за ст. 259 ККУ, відповідальність за який настає з 14 років. Оскільки Сергію 15 р., він несе кримінальну відповідальність особисто. Батьки несуть цивільно-правову відповідальність за матеріальну шкоду та адміністративну — за неналежне виховання.',
+      checks: ['Визначив(ла) вид відповідальності Сергія (кримінальна)','Назвав(ла) суть злочину (ст. 259 або «неправдиве повідомлення»)','Пояснив(ла), що відповідальність з 14 р.','Визначив(ла) відповідальність батьків (цивільна/адміністративна)']
+    },
+    {
+      title: 'Кейс 5 — Цивільне право / Споживачі',
+      q: '16-річний Ігор на подаровані гроші купив смартфон. Через три дні телефон перестав вмикатися через заводський брак. Ігор пішов до магазину вимагати заміну, але продавець сказав: «Приходь з батьками, ти неповнолітній».\n\nПитання: Чи правий продавець? Як діяти Ігорю?',
+      model: 'Продавець не правий. 16-річний Ігор має неповну цивільну дієздатність, але закон надає неповнолітнім право самостійно здійснювати права споживача щодо товарів, придбаних на власні кошти або отримані як подарунок. Ігор може самостійно вимагати заміни товару неналежної якості (Закон «Про захист прав споживачів»). Якщо магазин відмовляє — звернутися до органу захисту прав споживачів або суду.',
+      checks: ['Визначив(ла), що продавець не правий','Пояснив(ла) право неповнолітнього як споживача','Вказав(ла) право вимагати заміну/повернення','Назвав(ла) спосіб захисту права (орган або суд)']
+    },
+    {
+      title: 'Кейс 6 — Кримінальне право',
+      q: 'Двоє друзів, 13-річний Влад та 14-річний Денис, вкрали з магазину планшет. Поліція затримала обох.\n\nПитання: Чи понесуть хлопці кримінальну відповідальність? Якою буде їхня доля?',
+      model: '14-річний Денис — так, понесе кримінальну відповідальність: крадіжка входить до переліку злочинів зі зниженим віком відповідальності (з 14 р., ст. 22 ККУ). 13-річний Влад — ні, не несе кримінальної відповідальності (не досяг 14 р.). До Влада суд застосує примусові заходи виховного характеру. Батьки Влада несуть цивільну відповідальність за матеріальну шкоду та адміністративну — за неналежне виховання.',
+      checks: ['Правильно визначив(ла) долю Дениса (кримінальна відповідальність)','Правильно визначив(ла) долю Влада (без кримінальної, до 14 р.)','Назвав(ла) заходи виховного характеру для Влада','Вказав(ла) на відповідальність батьків Влада']
+    },
+    {
+      title: 'Кейс 7 — Право власності',
+      q: 'Бабуся подарувала 15-річній онуці квартиру. Дівчина вирішила її продати, щоб купити автомобіль, і вже знайшла покупця.\n\nПитання: Чи може вона самостійно укласти договір купівлі-продажу квартири? Яка процедура передбачена законом?',
+      model: 'Ні, самостійно 15-річна не може. Розпорядження нерухомим майном неповнолітнього потребує: 1) письмової згоди батьків; 2) обов\'язкового дозволу органу опіки та піклування (служби у справах дітей). Без обох умов угода є недійсною. Нотаріус не посвідчить такий договір без вказаних документів (ст. 177 СКУ, ст. 32 ЦКУ).',
+      checks: ['Визначив(ла), що самостійно — неможливо','Назвав(ла) вимогу: письмова згода батьків','Назвав(ла) вимогу: дозвіл органу опіки','Вказав(ла): без дозволу угода є недійсною']
+    }
+  ]
+};
+
+/* ════════════════════════════════
+   DATA — VARIANT B
+════════════════════════════════ */
+const VARIANT_B = {
+  label: 'Варіант Б',
+
+  tests: [
+    {
+      q: '13-річний хлопчик, граючи у дворі, розбив м\'ячем вікно сусідського автомобіля. Хто нестиме майнову (цивільно-правову) відповідальність за завдану шкоду?',
+      opts: ['Сам хлопчик з власних кишенькових грошей.','Батьки хлопчика, оскільки він є малолітнім.','Школа, у якій навчається хлопчик.','Збитки не відшкодовуються, бо це сталося випадково під час гри.'],
+      correct: 1,
+      expl: 'За шкоду, завдану малолітньою особою (до 14 років), матеріальну відповідальність несуть батьки або опікуни, оскільки вони зобов\'язані здійснювати нагляд за дитиною (ст. 1178 ЦКУ).'
+    },
+    {
+      q: 'Скільки днів становить щорічна основна відпустка для працівників віком до 18 років?',
+      opts: ['24 календарні дні.','28 календарних днів.','31 календарний день.','45 календарних днів.'],
+      correct: 2,
+      expl: 'Щорічна відпустка для осіб до 18 років становить 31 календарний день і надається влітку або у будь-який зручний для них час (ст. 75 КЗпП). Для дорослих — 24 дні.'
+    },
+    {
+      q: '17-річний студент був затриманий за безквитковий проїзд у тролейбусі. Він отримує стипендію.\n\nЯке адміністративне стягнення має бути накладене на нього?',
+      opts: ['Попередження, адже він неповнолітній.','Штраф на загальних підставах, оскільки він має самостійний дохід.','Штраф, який зобов\'язані сплатити виключно його батьки.','Громадські роботи строком до 20 годин.'],
+      correct: 1,
+      expl: 'Оскільки студент має стипендію (самостійний дохід), до нього застосовуються загальні заходи — штраф на загальних підставах, як до дорослого. Наявність доходу є ключовою умовою.'
+    },
+    {
+      q: 'З якого віку дитина має право самостійно розпоряджатися аліментами, які виплачуються на її утримання одним із батьків?',
+      opts: ['З 10 років.','З 14 років.','З 16 років.','Лише після досягнення 18 років.'],
+      correct: 1,
+      expl: 'З 14 років дитина набуває права самостійно отримувати та розпоряджатися аліментами, що виплачуються на її утримання (ст. 179 СКУ).'
+    },
+    {
+      q: 'Що з наведеного НЕ є примусовим заходом виховного характеру, що застосовується до неповнолітніх згідно з Кримінальним кодексом?',
+      opts: ['Обмеження дозвілля і встановлення особливих вимог до поведінки.','Передача неповнолітнього під нагляд батьків.','Позбавлення волі на строк до 5 років.','Направлення до спеціальної навчально-виховної установи.'],
+      correct: 2,
+      expl: 'Позбавлення волі — це кримінальне покарання, а не примусовий захід виховного характеру. Заходи виховного характеру (застереження, нагляд, обмеження дозвілля, навчально-виховний заклад) не передбачають позбавлення волі.'
+    },
+    {
+      q: '14-річна школярка хоче працювати під час навчального року на посаді кур\'єра (роздавати флаєри). Яка головна умова її працевлаштування?',
+      opts: ['Вона взагалі не має права працювати під час навчального року.','Робота має виконуватися у вільний від навчання час, без шкоди здоров\'ю, потрібна згода одного з батьків.','Потрібен дозвіл директора школи та класного керівника.','Вона може працювати до 36 годин на тиждень без згоди батьків.'],
+      correct: 1,
+      expl: 'З 14 років допускається легка робота у вільний від навчання час, без шкоди навчанню та здоров\'ю, за наявності письмової згоди одного з батьків (ст. 188 КЗпП).'
+    },
+    {
+      q: 'Кого закон визнає «малолітньою особою»?',
+      opts: ['Дитину у віці від 0 до 14 років.','Дитину у віці від 14 до 18 років.','Особу, яка не досягла 16-річного віку.','Будь-яку особу до досягнення повноліття.'],
+      correct: 0,
+      expl: 'Малолітня особа — це фізична особа, яка не досягла чотирнадцяти років (ст. 31 ЦКУ). Особи від 14 до 18 р. — неповнолітні, але не малолітні.'
+    },
+    {
+      q: '16-річний юнак працює на заводі. Керівництво видало наказ про притягнення його до надурочних робіт у зв\'язку з аварією на виробництві. Чи законний наказ?',
+      opts: ['Так, законний, бо усунення наслідків аварії є винятковою ситуацією.','Так, якщо юнак дав письмову згоду.','Ні, залучати неповнолітніх до надурочних робіт заборонено за будь-яких умов.','Так, якщо є згода профспілки підприємства.'],
+      correct: 2,
+      expl: 'Залучення осіб до 18 років до надурочних робіт заборонено КЗпП України без будь-яких винятків — навіть під час аварій (ст. 192 КЗпП). Наказ незаконний.'
+    }
+  ],
+
+  matchLeft: ['Цивільне право','Сімейне право','Трудове право','Адміністративне право','Кримінальне право'],
+  matchRight: [
+    'А) 16-річна учениця просить звільнити її з роботи за власним бажанням.',
+    'Б) 17-річний хлопець розпивав слабоалкогольні напої в парку.',
+    'В) 15-річний юнак, захищаючись від нападників, перевищив межі необхідної оборони, що призвело до смерті одного з них.',
+    'Г) 14-річна дівчина купує в магазині зошити та ручки.',
+    'Д) Батько відмовляється сплачувати кошти на утримання 15-річного сина.'
+  ],
+  matchCorrect: [3, 4, 0, 1, 2],
+  matchLeftLabel: 'Галузь права',
+  matchRightLabel: 'Ситуація з неповнолітнім',
+  matchLegend: '<strong>Завдання:</strong> Встановіть відповідність між <strong>галуззю права</strong> (ліворуч) та <strong>ситуацією, в якій опинився неповнолітній</strong> (праворуч). Утворіть 5 пар.',
+
+  open: [
+    {
+      q: 'З якого віку дитина має право самостійно звернутися до суду за захистом своїх прав та інтересів? Що для цього потрібно?',
+      model: 'З 14 років дитина має право самостійно звернутися до суду за захистом своїх прав та інтересів, подавши позовну заяву від свого імені. Суд зобов\'язаний прийняти таку заяву та розглянути справу. До 14 років дитина звертається до суду через своїх законних представників (батьків або опікунів), але суд зобов\'язаний вислухати дитину від 10 років.',
+      criteria: ['Правильно вказано вік — з 14 р.','Пояснено порядок звернення (самостійно, позовна заява)','Вказано, що до 14 р. — через представників','Зазначено право суду вислухати дитину від 10 р.']
+    },
+    {
+      q: 'Назвіть дві ключові відмінності між умовами праці повнолітніх і неповнолітніх працівників.',
+      model: 'Перша відмінність: скорочений робочий час для неповнолітніх (до 36 год/тижд. для 16–18 р., до 24 год для 15–16 р.) при збереженні повної зарплати, тоді як дорослі працюють 40 год/тижд. Друга відмінність: неповнолітнім надається довша щорічна відпустка — 31 календарний день (проти 24 у дорослих), обов\'язково влітку. Також неповнолітнім заборонені нічні, надурочні, важкі і шкідливі роботи.',
+      criteria: ['Названо скорочений робочий час (з конкретними цифрами)','Названо тривалішу відпустку (31 день)','Порівняно з умовами дорослих','Названо додаткові заборони (нічні/надурочні)']
+    },
+    {
+      q: 'Поясніть сутність поняття «емансипація» (надання повної цивільної дієздатності). У яких випадках вона можлива?',
+      model: 'Емансипація — це юридичне надання особі, яка не досягла 18 років, повного обсягу цивільної дієздатності. Вона можлива у трьох випадках (з 16 р.): 1) якщо особа зареєстрована як мати або батько дитини; 2) якщо особа уклала трудовий договір; 3) якщо особа зареєструвалася як підприємець (ФОП). У цих випадках суд або орган опіки надають повну дієздатність.',
+      criteria: ['Дано визначення (повна дієздатність до 18 р.)','Названо реєстрацію батьком/матір\'ю як підставу','Названо трудовий договір або ФОП як підставу','Вказано вік — з 16 р.']
+    },
+    {
+      q: 'Яке максимальне покарання у вигляді позбавлення волі може бути призначене неповнолітньому згідно із законом?',
+      model: 'За загальним правилом максимальний строк позбавлення волі для неповнолітніх становить 10 років. Лише за особливо тяжкі злочини (наприклад, умисне вбивство при обтяжуючих обставинах) суд може призначити до 15 років. Довічне позбавлення волі до неповнолітніх не застосовується ніколи. Покарання відбувається у спеціальних виховних колоніях.',
+      criteria: ['Вказано загальне обмеження (10 р.)','Вказано максимум для особливо тяжких (15 р.)','Зазначено заборону довічного','Згадано відбуття у виховних колоніях']
+    },
+    {
+      q: 'Хто є законними представниками малолітніх дітей і які їхні повноваження щодо майна дітей?',
+      model: 'Законними представниками малолітніх дітей є батьки (або усиновлювачі), а за їх відсутності — опікуни. Вони управляють майном малолітнього в його інтересах. Проте без дозволу органу опіки батьки не можуть відчужувати (продавати, дарувати, обмінювати) нерухоме майно або майно значної цінності. Доходи від майна мають витрачатися на утримання та виховання дитини.',
+      criteria: ['Названо батьків (усиновлювачів) і опікунів','Вказано право управляти майном в інтересах дитини','Названо заборону відчужувати без дозволу опіки','Вказано цільове використання доходів від майна']
+    }
+  ],
+
+  cases: [
+    {
+      title: 'Кейс 1 — Сімейне право',
+      q: '16-річний Петро посварився з батьками і вирішив жити окремо, орендувавши кімнату. Батьки звернулися до поліції з вимогою повернути сина додому силою.\n\nПитання: Чи має право 16-річний Петро самостійно обирати місце проживання?',
+      model: 'Так, 16-річний Петро має право самостійно обирати місце проживання (ст. 29 ЦКУ). Поліція не зобов\'язана примусово повертати його додому. Водночас батьки зберігають обов\'язок утримувати та нести відповідальність за нього. Конфлікт може бути вирішений за допомогою медіації або органу служби у справах дітей.',
+      checks: ['Визначив(ла), що Петро має таке право (з 16 р.)','Посилається на ЦКУ або норму права','Вказав(ла), що поліція не може примусово повертати','Назвав(ла) спосіб врегулювання конфлікту']
+    },
+    {
+      title: 'Кейс 2 — Трудове право',
+      q: '16-річна Анна влаштувалася офіціанткою. Через місяць їй заявили, що вона має сплатити 2000 грн за розбитий посуд, вирахувавши ці гроші з її зарплати. Договір про повну матеріальну відповідальність з нею не укладали.\n\nПитання: Чи законні дії роботодавця щодо вирахування коштів?',
+      model: 'Ні, дії роботодавця незаконні з двох підстав: 1) з неповнолітніми до 18 р. заборонено укладати договори про повну матеріальну відповідальність (ст. 1351 КЗпП); 2) роботодавець не може самостійно вираховувати кошти з зарплати без рішення суду або письмової згоди самого працівника. Анна несе лише обмежену матеріальну відповідальність (у розмірі середньомісячного заробітку) і лише за доведеної вини.',
+      checks: ['Визначив(ла), що дії незаконні','Вказав(ла) заборону на повну матвідповідальність для неповнолітніх','Пояснив(ла) порядок стягнення (суд або згода)','Вказав(ла) обмежену відповідальність Анни']
+    },
+    {
+      title: 'Кейс 3 — Цивільне право / Авторське право',
+      q: '15-річний школяр розробив успішний мобільний додаток. Компанія пропонує йому продати права на додаток за велику суму.\n\nПитання: Чи може він самостійно укласти такий договір, враховуючи свій вік?',
+      model: 'Так, може самостійно. Неповнолітні від 14 до 18 р. мають право самостійно здійснювати права на результати інтелектуальної, творчої діяльності (ст. 32 ЦКУ). Авторські права на мобільний додаток виникають у школяра автоматично як у автора. Укласти договір про відчуження майнових авторських прав він може без згоди батьків.',
+      checks: ['Визначив(ла), що може самостійно','Посилається на право неповнолітніх щодо інтелектуальної власності','Пояснив(ла) виникнення авторських прав','Зробив(ла) правильний висновок щодо договору']
+    },
+    {
+      title: 'Кейс 4 — Адміністративне право',
+      q: '15-річний Андрій на стадіоні під час матчу палив цигарки та нецензурно лаявся. Його затримав патруль.\n\nПитання: Чи буде Андрій нести адміністративну відповідальність? Якщо ні, то хто відповідатиме?',
+      model: 'Ні, Андрій не нестиме адміністративної відповідальності — вона настає з 16 років. Оскільки йому 15 р., справу закривають без стягнення для нього особисто. Проте батьки Андрія нестимуть адміністративну відповідальність за ст. 184 КУпАП — за невиконання обов\'язків щодо виховання неповнолітнього (штраф). Також можливе звернення до служби у справах дітей.',
+      checks: ['Визначив(ла), що Андрій не несе адмінвідповідальності (до 16 р.)','Вказав(ла), що відповідатимуть батьки','Назвав(ла) норму: ст. 184 КУпАП або суть (обов\'язки виховання)','Вказав(ла) роль служби у справах дітей']
+    },
+    {
+      title: 'Кейс 5 — Кримінальне право',
+      q: '14-річний хлопець заради розваги кинув камінь з моста на дорогу, який влучив у лобове скло машини. Водій втратив керування, сталася ДТП з тяжкими тілесними ушкодженнями.\n\nПитання: Чи підлягає хлопець кримінальній відповідальності в цьому віці?',
+      model: 'Так, підлягає. Дії можуть кваліфікуватися як умисне заподіяння тяжких тілесних ушкоджень або пошкодження транспортних засобів чи шляхів сполучення (ст. 277 ККУ) — за обидва злочини відповідальність настає з 14 р. (ст. 22 ККУ). Хлопцю 14 р. — він є суб\'єктом кримінальної відповідальності. Батьки додатково несуть цивільну відповідальність за майнову шкоду.',
+      checks: ['Визначив(ла), що хлопець підлягає відповідальності','Правильно кваліфікував(ла) злочин (тяжке тілесне або ст. 277)','Пояснив(ла), що відповідальність настає з 14 р.','Вказав(ла) цивільну відповідальність батьків']
+    },
+    {
+      title: 'Кейс 6 — Цивільне право / Спадщина',
+      q: 'У 12-річної Оксани помер дідусь, залишивши їй у спадок будинок.\n\nПитання: Чи може Оксана прийняти спадщину і самостійно управляти цим будинком? Як це відбувається юридично?',
+      model: 'Оксана може прийняти спадщину, але не самостійно — вона малолітня (12 р.). Від її імені спадщину приймають батьки або законні представники. Вони ж управляють будинком до досягнення Оксаною повноліття. Відчужувати будинок (продавати, дарувати) батьки можуть лише з дозволу органу опіки. Нотаріус оформляє право власності на ім\'я Оксани.',
+      checks: ['Визначив(ла), що сама не може (малолітня, до 14 р.)','Вказав(ла), що від її імені діють батьки/представники','Вказав(ла) дозвіл опіки для відчуження','Пояснив(ла), що власність оформляється на ім\'я Оксани']
+    },
+    {
+      title: 'Кейс 7 — Трудове право',
+      q: '17-річний випускник школи прийшов влаштовуватися на роботу. Роботодавець вимагає від нього пройти медичний огляд і попереджає, що встановить випробувальний термін на 1 місяць.\n\nПитання: Чи правомірні вимоги роботодавця щодо медогляду та випробувального терміну?',
+      model: 'Медогляд — правомірно; випробувальний термін — ні. Роботодавець зобов\'язаний провести медичний огляд неповнолітнього за свій рахунок до прийому на роботу (ст. 191 КЗпП) — це законна вимога. Однак встановлення випробувального терміну для осіб до 18 р. прямо заборонено КЗпП (ст. 26). У цій частині вимога роботодавця є незаконною.',
+      checks: ['Визначив(ла), що медогляд — правомірно','Пояснив(ла) обов\'язковість медогляду для неповнолітніх','Визначив(ла), що випробування — незаконно','Посилається на ст. 26 КЗпП або суть заборони']
+    }
+  ]
+};
+
+/* ════════════════════════════════
+   STATE
+════════════════════════════════ */
+const state = {
+  studentName: '',
+  studentClass: '',
+  variant: null,          // VARIANT_A or VARIANT_B
+  variantLabel: '',
+  startTime: null,
+  timerInterval: null,
+  timerSec: 40 * 60,
+  // scores
+  p1Score: 0,
+  p2Score: 0,
+  p3Score: 0,  // self-assessed
+  p4Score: 0,  // self-assessed
+  // answers
+  testAnswered: [],       // array of booleans (correct or not)
+  testAnsweredCount: 0,
+  matchPairs: [],         // [leftIdx] = rightIdx or -1
+  matchChecked: false,
+  p3SelfScores: [],       // number of checked criteria per question
+  p4SelfScores: [],
+};
+
+/* ════════════════════════════════
+   GRADING SCALE
+════════════════════════════════ */
+const SCALE = [
+  {min:24,max:25,grade:12},{min:22,max:23,grade:11},{min:20,max:21,grade:10},
+  {min:18,max:19,grade:9},{min:16,max:17,grade:8},{min:14,max:15,grade:7},
+  {min:12,max:13,grade:6},{min:10,max:11,grade:5},{min:8,max:9,grade:4},
+  {min:5,max:7,grade:3},{min:3,max:4,grade:2},{min:0,max:2,grade:1}
+];
+function getGrade(pts){
+  for(const s of SCALE) if(pts>=s.min&&pts<=s.max) return s.grade;
+  return 1;
+}
+const GRADE_COLORS=['#ef4444','#ef4444','#f97316','#f97316','#eab308','#eab308',
+  '#84cc16','#22c55e','#22c55e','#16a34a','#0ea5e9','#1565c0'];
+
+/* ════════════════════════════════
+   START
+════════════════════════════════ */
+function startQuiz(){
+  const name = document.getElementById('student-name').value.trim();
+  const cls  = document.getElementById('student-class').value.trim();
+  if(!name){ alert('Будь ласка, введіть своє прізвище та ім\'я!'); return; }
+  if(!cls){  alert('Будь ласка, введіть свій клас!'); return; }
+  state.studentName = name;
+  state.studentClass = cls;
+  // Hide ALL welcome screen content
+  ['welcome-emblem','welcome-title','welcome-sub',
+   'card-structure','card-instructions',
+   'wrap-name','wrap-class','start-btn','welcome-hint'
+  ].forEach(id=>{ const el=document.getElementById(id); if(el) el.style.display='none'; });
+  // Immediately snap to top so Part 1 starts at top
+  window.scrollTo({top:0,behavior:'instant'});
+  state.variant = Math.random()<0.5 ? VARIANT_A : VARIANT_B;
+  state.variantLabel = state.variant.label;
+  state.startTime = Date.now();
+  state.testAnswered = new Array(state.variant.tests.length).fill(null);
+  state.testChosenIdx = new Array(state.variant.tests.length).fill(null);
+  state.testAnsweredCount = 0;
+  state.matchPairs = new Array(state.variant.matchLeft.length).fill(-1);
+  state.p3SelfScores = new Array(state.variant.open.length).fill(0);
+  state.p4SelfScores = new Array(state.variant.cases.length).fill(0);
+  state.openInputCount = {};
+  state.caseInputCount = {};
+
+  document.getElementById('hdr-variant').textContent = state.variantLabel;
+  document.getElementById('hdr').classList.remove('hidden');
+  document.getElementById('teacher-btn').classList.remove('hidden');
+
+  buildTests();
+  buildMatching();
+  buildOpen();
+  buildCases();
+  startTimer();
+  goTo('part1');
+  updateProgress();
+}
+
+/* ════════════════════════════════
+   TIMER
+════════════════════════════════ */
+function startTimer(){
+  state.timerSec = 40*60;
+  const el = document.getElementById('timer');
+  state.timerInterval = setInterval(()=>{
+    state.timerSec--;
+    const m = Math.floor(state.timerSec/60), s = state.timerSec%60;
+    el.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(state.timerSec<=0){ clearInterval(state.timerInterval); el.textContent='00:00'; submitAll(); }
+    else if(state.timerSec<=180){ el.className='crit'; }
+    else if(state.timerSec<=300){ el.className='warn'; }
+  },1000);
+}
+
+/* ════════════════════════════════
+   NAVIGATION
+════════════════════════════════ */
+function goTo(section){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  const screens={'welcome':'s-welcome','part1':'s-part1','part2':'s-part2','part3':'s-part3','part4':'s-part4','results':'s-results'};
+  const el = document.getElementById(screens[section]||section);
+  if(el){ el.classList.add('active'); window.scrollTo({top:0,behavior:'instant'}); }
+  updateProgress();
+}
+
+/* ════════════════════════════════
+   PROGRESS
+════════════════════════════════ */
+function updateProgress(){
+  const total = 25;
+  const auto = state.p1Score + state.p2Score;
+  const pct = Math.round((auto/total)*100);
+  document.getElementById('hdr-prog-bar').style.width = pct+'%';
+  document.getElementById('hdr-prog-label').textContent = `${auto} / ${total} балів`;
+}
+
+/* ════════════════════════════════
+   PART 1 — TESTS
+════════════════════════════════ */
+function buildTests(){
+  const v = state.variant;
+  const container = document.getElementById('tests-container');
+  container.innerHTML = '';
+  v.tests.forEach((t,i)=>{
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `test-${i}`;
+    const letters = ['А','Б','В','Г'];
+    card.innerHTML = `
+      <div class="q-num">Питання ${i+1} з ${v.tests.length}</div>
+      <div class="q-text">${escHtml(t.q)}</div>
+      <div class="options" id="opts-${i}">
+        ${t.opts.map((o,j)=>`
+          <div class="opt" id="opt-${i}-${j}" onclick="selectOpt(${i},${j})">
+            <div class="opt-letter">${letters[j]}</div>
+            <div class="opt-text">${escHtml(o)}</div>
+          </div>`).join('')}
+      </div>
+      <div class="explanation" id="expl-${i}">
+        <div class="expl-hdr">📖 Пояснення</div>
+        <div>${escHtml(t.expl)}</div>
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function selectOpt(qi, oi){
+  if(state.testAnswered[qi] !== null) return;
+  state.testChosenIdx[qi] = oi;
+  const t = state.variant.tests[qi];
+  const opts = document.querySelectorAll(`#opts-${qi} .opt`);
+  opts.forEach(o=>o.classList.add('locked'));
+  opts[oi].classList.add(oi===t.correct?'correct':'wrong');
+  if(oi!==t.correct) opts[t.correct].classList.add('correct');
+  const correct = oi===t.correct;
+  state.testAnswered[qi] = correct;
+  if(correct) state.p1Score++;
+  state.testAnsweredCount++;
+  document.getElementById(`expl-${qi}`).classList.add('show');
+  updateProgress();
+  // Enable next if all answered
+  if(state.testAnsweredCount === state.variant.tests.length){
+    document.getElementById('p1-next').disabled = false;
+  }
+}
+
+/* ════════════════════════════════
+   PART 2 — MATCHING
+════════════════════════════════ */
+let matchActiveLeft = -1;
+let matchRightShuffled = [];
+
+function buildMatching(){
+  const v = state.variant;
+  document.getElementById('match-legend').innerHTML = v.matchLegend;
+  document.getElementById('match-left-label').textContent = v.matchLeftLabel;
+  document.getElementById('match-right-label').textContent = v.matchRightLabel;
+
+  // Shuffle right
+  matchRightShuffled = v.matchRight.map((text,i)=>({text,origIdx:i}));
+  for(let i=matchRightShuffled.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [matchRightShuffled[i],matchRightShuffled[j]]=[matchRightShuffled[j],matchRightShuffled[i]];
+  }
+  state.matchPairs = new Array(v.matchLeft.length).fill(-1);
+  matchActiveLeft = -1;
+  renderMatchColumns();
+}
+
+function renderMatchColumns(){
+  const v = state.variant;
+  const pairColors=['#1565c0','#7b1fa2','#c62828','#2e7d32','#e65100'];
+
+  const leftEl = document.getElementById('match-left');
+  leftEl.innerHTML = v.matchLeft.map((text,i)=>{
+    const pairIdx = state.matchPairs.indexOf(matchRightShuffled.findIndex(r=>
+      state.matchPairs[i]!=-1 && r.origIdx!=-1 && matchRightShuffled[state.matchPairs[i]]===matchRightShuffled[state.matchPairs[i]]
+    ));
+    const paired = state.matchPairs[i]!==-1;
+    const bg = paired ? pairColors[i]+'33' : '';
+    const border = paired ? pairColors[i] : '';
+    return `<div class="match-item ${i===matchActiveLeft?'active-left':''} ${paired?'paired':''}"
+      id="ml-${i}" style="${border?'border-color:'+border+';background:'+bg:''}"
+      onclick="clickLeft(${i})">
+      <div class="pair-badge" style="background:${pairColors[i]};color:#fff">${i+1}</div>
+      <div>${escHtml(text)}</div>
+    </div>`;
+  }).join('');
+
+  const rightEl = document.getElementById('match-right');
+  rightEl.innerHTML = matchRightShuffled.map((item,i)=>{
+    const leftIdx = state.matchPairs.findIndex(p=>p===i);
+    const paired = leftIdx !== -1;
+    const bg = paired ? pairColors[leftIdx]+'33' : '';
+    const border = paired ? pairColors[leftIdx] : '';
+    return `<div class="match-item ${paired?'paired':''}"
+      id="mr-${i}" style="${border?'border-color:'+border+';background:'+bg:''}"
+      onclick="clickRight(${i})">
+      ${paired?`<div class="pair-badge" style="background:${pairColors[leftIdx]};color:#fff">${leftIdx+1}</div>`:'<div class="pair-badge" style="background:var(--surface3);color:var(--muted)">&nbsp;</div>'}
+      <div>${escHtml(item.text)}</div>
+    </div>`;
+  }).join('');
+}
+
+function clickLeft(i){
+  if(state.matchChecked) return;
+  if(state.matchPairs[i]!==-1){
+    // Unpair
+    state.matchPairs[i]=-1;
+    matchActiveLeft=-1;
+    const pairedCount = state.matchPairs.filter(p=>p!==-1).length;
+    const countEl = document.getElementById('match-pairs-count');
+    if(countEl) countEl.textContent = pairedCount;
+    document.getElementById('p2-next').disabled = true;
+  } else {
+    matchActiveLeft = i;
+  }
+  renderMatchColumns();
+}
+
+function clickRight(i){
+  if(state.matchChecked) return;
+  if(matchActiveLeft===-1) return;
+  // If this right is already taken, swap
+  const prevLeft = state.matchPairs.findIndex(p=>p===i);
+  if(prevLeft!==-1) state.matchPairs[prevLeft]=-1;
+  state.matchPairs[matchActiveLeft]=i;
+  matchActiveLeft=-1;
+  renderMatchColumns();
+  // Update status counter and enable Next when all 5 paired
+  const pairedCount = state.matchPairs.filter(p=>p!==-1).length;
+  const countEl = document.getElementById('match-pairs-count');
+  if(countEl) countEl.textContent = pairedCount;
+  document.getElementById('p2-next').disabled = pairedCount < state.variant.matchLeft.length;
+}
+
+function resetMatching(){
+  state.matchPairs = new Array(state.variant.matchLeft.length).fill(-1);
+  matchActiveLeft = -1;
+  state.matchChecked = false;
+  document.getElementById('match-result').style.display='none';
+  document.getElementById('p2-next').disabled = true;
+  document.getElementById('match-left').querySelectorAll('.match-item').forEach(el=>{
+    el.classList.remove('correct-pair','wrong-pair','locked');
+  });
+  document.getElementById('match-right').querySelectorAll('.match-item').forEach(el=>{
+    el.classList.remove('correct-pair','wrong-pair','locked');
+  });
+  buildMatching();
+}
+
+function evalMatching(){
+  if(state.matchChecked) return;
+  state.matchChecked = true;
+  const v = state.variant;
+  let score = 0;
+  v.matchLeft.forEach((text,i)=>{
+    const myRightIdx = state.matchPairs[i];
+    if(myRightIdx === -1) return;
+    const isCorrect = matchRightShuffled[myRightIdx].origIdx === v.matchCorrect[i];
+    if(isCorrect) score++;
+    const leftEl2 = document.getElementById(`ml-${i}`);
+    const rightEl2 = document.getElementById(`mr-${myRightIdx}`);
+    if(leftEl2){ leftEl2.classList.add(isCorrect?'correct-pair':'wrong-pair'); leftEl2.classList.add('locked'); }
+    if(rightEl2){ rightEl2.classList.add(isCorrect?'correct-pair':'wrong-pair'); rightEl2.classList.add('locked'); }
+  });
+  state.p2Score = score;
+  updateProgress();
+}
+
+/* ════════════════════════════════
+   PART 3 — OPEN QUESTIONS
+════════════════════════════════ */
+function buildOpen(){
+  const v = state.variant;
+  const container = document.getElementById('open-container');
+  container.innerHTML = v.open.map((q,i)=>`
+    <div class="q-card" id="open-card-${i}">
+      <div class="q-num">Питання ${i+1} з ${v.open.length}</div>
+      <div class="q-text">${escHtml(q.q)}</div>
+      <textarea class="open-area" placeholder="Напишіть свою відповідь тут…" rows="5" id="open-ta-${i}" oninput="trackOpenInput(${i})"></textarea>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-gold btn-sm" id="open-submit-${i}" onclick="submitOpen(${i})">📨 Надіслати відповідь</button>
+        <button class="btn btn-ghost btn-sm" id="open-view-${i}" onclick="toggleOpenModel(${i})" disabled>📖 Переглянути зразок</button>
+        <span id="open-badge-${i}" style="font-size:13px;font-weight:700"></span>
+      </div>
+      <div class="model-block" id="model-${i}">
+        <div style="margin-top:14px">
+          <div class="model-hdr">✅ Зразок ідеальної відповіді</div>
+          <div class="model-text">${escHtml(q.model)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function trackOpenInput(qi){
+  if(!state.openInputCount) state.openInputCount = {};
+  state.openInputCount[qi] = (state.openInputCount[qi] || 0) + 1;
+}
+
+function submitOpen(qi){
+  const ta = document.getElementById(`open-ta-${qi}`);
+  const text = ta.value.trim();
+  if(text.length < 10){
+    alert('Будь ласка, напишіть відповідь перед надсиланням.');
+    return;
+  }
+  ta.disabled = true;
+  ta.style.opacity = '0.75';
+  const submitBtn = document.getElementById(`open-submit-${qi}`);
+  submitBtn.disabled = true;
+  submitBtn.textContent = '✓ Відповідь надіслано';
+  submitBtn.style.opacity = '0.6';
+  document.getElementById(`open-view-${qi}`).disabled = false;
+  recalcOpenScore(qi);
+}
+
+function toggleOpenModel(qi){
+  const modelEl = document.getElementById(`model-${qi}`);
+  const viewBtn = document.getElementById(`open-view-${qi}`);
+  if(!modelEl.classList.contains('show')){
+    modelEl.classList.add('show');
+    viewBtn.textContent = '📖 Сховати зразок';
+  } else {
+    modelEl.classList.remove('show');
+    viewBtn.textContent = '📖 Переглянути зразок';
+  }
+}
+
+function textSimilarity(a, b){
+  const words = s => new Set(s.toLowerCase().replace(/[^а-яёіїєa-z0-9\s]/gi,'').split(/\s+/).filter(w=>w.length>2));
+  const wA = words(a), wB = words(b);
+  if(!wA.size || !wB.size) return 0;
+  let inter = 0;
+  wA.forEach(w=>{ if(wB.has(w)) inter++; });
+  return inter / Math.max(wA.size, wB.size);
+}
+
+function autoCritSim(userText, criteria){
+  // Check what fraction of criteria items have keyword overlap with user text
+  const matched = criteria.filter(c => textSimilarity(userText, c) >= 0.15).length;
+  return matched / criteria.length;
+}
+
+function scoreEarned(userText, modelText, criteria, inputCount){
+  // Rule 5: fewer than 10 input events → not earned
+  if((inputCount || 0) < 10) return 0;
+  const sim = textSimilarity(userText, modelText);
+  // Rule 4a: sim ≥ 75% → earned immediately
+  if(sim >= 0.75) return 1;
+  // Rule 4b: 25% ≤ sim < 75% → check criteria auto-match ≥ 50%
+  if(sim >= 0.25){
+    const critSim = autoCritSim(userText, criteria);
+    if(critSim >= 0.5) return 1;
+  }
+  return 0;
+}
+
+function recalcOpenScore(qi){
+  const q = state.variant.open[qi];
+  const userText = (document.getElementById(`open-ta-${qi}`)?.value || '').trim();
+  const inputCount = state.openInputCount?.[qi] || 0;
+  const earned = scoreEarned(userText, q.model, q.criteria, inputCount);
+  state.p3SelfScores[qi] = earned;
+  state.p3Score = state.p3SelfScores.reduce((a,b)=>a+b,0);
+  const badge = document.getElementById(`open-badge-${qi}`);
+  if(badge && userText.length >= 10){
+    badge.textContent = earned ? '✓ Відповідь зараховано' : '× Відповідь не зараховано';
+    badge.style.color = earned ? 'var(--ok)' : 'var(--err)';
+  }
+  updateProgress();
+}
+
+/* ════════════════════════════════
+   PART 4 — CASES
+════════════════════════════════ */
+function buildCases(){
+  const v = state.variant;
+  const container = document.getElementById('cases-container');
+  container.innerHTML = v.cases.map((c,i)=>`
+    <div class="q-card" id="case-card-${i}">
+      <div class="q-num">${c.title}</div>
+      <div class="q-text case-text">${escHtml(c.q)}</div>
+      <textarea class="open-area" placeholder="Напишіть правовий аналіз ситуації…" rows="6" id="case-ta-${i}" oninput="trackCaseInput(${i})"></textarea>
+      <div style="margin-top:12px;display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+        <button class="btn btn-gold btn-sm" id="case-submit-${i}" onclick="submitCase(${i})">📨 Надіслати відповідь</button>
+        <button class="btn btn-ghost btn-sm" id="case-view-${i}" onclick="toggleCaseModel(${i})" disabled>⚖️ Переглянути зразок</button>
+        <span id="case-result-${i}" style="font-size:13px;font-weight:700"></span>
+      </div>
+      <div class="model-block" id="case-model-${i}">
+        <div style="margin-top:14px">
+          <div class="model-hdr">✅ Еталонна відповідь</div>
+          <div class="model-text">${escHtml(c.model)}</div>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function trackCaseInput(qi){
+  if(!state.caseInputCount) state.caseInputCount = {};
+  state.caseInputCount[qi] = (state.caseInputCount[qi] || 0) + 1;
+}
+
+function submitCase(qi){
+  const ta = document.getElementById(`case-ta-${qi}`);
+  const text = ta.value.trim();
+  if(text.length < 10){
+    alert('Будь ласка, напишіть відповідь перед надсиланням.');
+    return;
+  }
+  ta.disabled = true;
+  ta.style.opacity = '0.75';
+  const submitBtn = document.getElementById(`case-submit-${qi}`);
+  submitBtn.disabled = true;
+  submitBtn.textContent = '✓ Відповідь надіслано';
+  submitBtn.style.opacity = '0.6';
+  document.getElementById(`case-view-${qi}`).disabled = false;
+  recalcCaseScore(qi);
+}
+
+function toggleCaseModel(qi){
+  const modelEl = document.getElementById(`case-model-${qi}`);
+  const viewBtn = document.getElementById(`case-view-${qi}`);
+  if(!modelEl.classList.contains('show')){
+    modelEl.classList.add('show');
+    viewBtn.textContent = '⚖️ Сховати зразок';
+  } else {
+    modelEl.classList.remove('show');
+    viewBtn.textContent = '⚖️ Переглянути зразок';
+  }
+}
+
+function recalcCaseScore(qi){
+  const c = state.variant.cases[qi];
+  const userText = (document.getElementById(`case-ta-${qi}`)?.value || '').trim();
+  const inputCount = state.caseInputCount?.[qi] || 0;
+  const earned = scoreEarned(userText, c.model, c.checks, inputCount);
+  state.p4SelfScores[qi] = earned;
+  state.p4Score = state.p4SelfScores.reduce((a,b)=>a+b,0);
+  const resEl = document.getElementById(`case-result-${qi}`);
+  if(resEl && userText.length >= 10){
+    resEl.textContent = earned ? '✓ Відповідь зараховано' : '× Відповідь не зараховано';
+    resEl.style.color = earned ? 'var(--ok)' : 'var(--err)';
+  }
+  updateProgress();
+}
+
+/* ════════════════════════════════
+   SUBMIT / RESULTS
+════════════════════════════════ */
+function submitAll(){
+  clearInterval(state.timerInterval);
+  // Evaluate matching (deferred from Part 2)
+  evalMatching();
+  // Collect self-scores from Part 3 & 4 (already tracked live via checkboxes)
+  const elapsed = Math.floor((Date.now()-state.startTime)/1000);
+  const mins = Math.floor(elapsed/60), secs = elapsed%60;
+  const timeStr = `${mins} хв ${secs} с`;
+
+  // Calculate total
+  const total = state.p1Score + state.p2Score + state.p3Score + state.p4Score;
+  const grade = getGrade(total);
+
+  // Render results
+  document.getElementById('res-grade').textContent = grade;
+  document.getElementById('res-grade').style.color = GRADE_COLORS[grade-1];
+  document.getElementById('res-name').textContent = state.studentName;
+  document.getElementById('res-meta').textContent = `${state.studentClass} · ${state.variantLabel} · Час виконання: ${timeStr} · Набрано: ${total} / 25 балів`;
+  document.getElementById('r-p1').textContent = state.p1Score;
+  document.getElementById('r-p1').style.color = state.p1Score>=6?'var(--ok)':state.p1Score>=4?'var(--gold)':'var(--err)';
+  document.getElementById('r-p2').textContent = state.p2Score;
+  document.getElementById('r-p2').style.color = state.p2Score>=4?'var(--ok)':state.p2Score>=2?'var(--gold)':'var(--err)';
+  document.getElementById('r-p3').textContent = state.p3Score + ' *';
+  document.getElementById('r-p4').textContent = state.p4Score + ' *';
+
+  // Scale bar
+  buildScaleBar(grade);
+
+  // Recommendations
+  buildRecs(state.p1Score, state.p2Score, state.p3Score, state.p4Score, total);
+
+  // Share text + auto-send to Telegram
+  buildShareText(total, grade, timeStr);
+
+  // Save to localStorage
+  saveResult(total, grade, elapsed);
+
+  goTo('results');
+
+  // Send report after screen transition (non-blocking)
+  setTimeout(()=>{ sendReportToTelegram(state.reportText); }, 400);
+}
+
+function buildScaleBar(myGrade){
+  const bar = document.getElementById('scale-bar');
+  const grades=[1,2,3,4,5,6,7,8,9,10,11,12];
+  const colors=['#7f1d1d','#991b1b','#c2410c','#d97706','#ca8a04','#84cc16',
+    '#4ade80','#22c55e','#16a34a','#0ea5e9','#1d4ed8','#1565c0'];
+  bar.innerHTML = grades.map((g,i)=>`
+    <div class="scale-seg ${g===myGrade?'active':''}"
+      style="background:${colors[i]};opacity:${g===myGrade?'1':'0.4'};font-size:${g===myGrade?'14px':'11px'}">
+      ${g}
+    </div>`).join('');
+}
+
+function buildRecs(p1,p2,p3,p4,total){
+  const recs=[];
+  if(p1<6) recs.push({icon:'📝',text:'Повторіть тему: права та відповідальність неповнолітніх за різними галузями права. Зверніть увагу на вікові межі.'});
+  if(p2<4) recs.push({icon:'🔗',text:'Практикуйте встановлення відповідності між віком/галуззю права та конкретними правами. Складіть власну таблицю.'});
+  if(p3<4) recs.push({icon:'✍️',text:'Для відкритих питань: вчіться давати структуровану відповідь — визначення → пояснення → приклад. Перечитайте підручник.'});
+  if(p4<5) recs.push({icon:'⚖️',text:'Для кейсів: використовуйте алгоритм — хто суб\'єкт? який вік? яка норма? які наслідки? Практикуйте на прикладах.'});
+  if(total>=22) recs.push({icon:'🏆',text:'Відмінний результат! Ви добре засвоїли тему. Для поглиблення — ознайомтесь з реальними судовими справами за участю неповнолітніх.'});
+  if(!recs.length) recs.push({icon:'📚',text:'Систематично повторюйте матеріал та практикуйте розв\'язання правових задач.'});
+  document.getElementById('recs-list').innerHTML = recs.map(r=>`
+    <div class="rec-item"><div class="ri-icon">${r.icon}</div><div>${r.text}</div></div>`).join('');
+}
+
+function buildShareText(total,grade,timeStr){
+  const now = new Date().toLocaleString('uk-UA');
+  const v = state.variant;
+  const line = '═'.repeat(52);
+  const dash = '─'.repeat(52);
+
+  // Helper: auto-detect which criteria match
+  function matchedCriteria(userText, criteriaArr){
+    return criteriaArr.map((c,i)=>({
+      idx: i+1,
+      text: c,
+      matched: textSimilarity(userText, c) >= 0.15
+    }));
+  }
+
+  // Helper: determine reason for scoring decision
+  function scoreReason(userText, modelText, criteriaArr, inputCount){
+    const cnt = inputCount || 0;
+    if(cnt < 10) return `❌ Менше 10 дій введення (${cnt})`;
+    const sim = textSimilarity(userText, modelText);
+    const simPct = Math.round(sim*100);
+    const matched = criteriaArr.filter(c => textSimilarity(userText,c)>=0.15);
+    const critPct = Math.round(matched.length/criteriaArr.length*100);
+    if(sim >= 0.75) return `✓ Схожість з еталоном: ${simPct}%`;
+    if(sim >= 0.25 && matched.length/criteriaArr.length >= 0.5)
+      return `✓ Часткова схожість (${simPct}%) + критерії (${critPct}%)`;
+    if(sim >= 0.25)
+      return `❌ Схожість ${simPct}%, але критеріїв лише ${critPct}% (потрібно ≥50%)`;
+    return `❌ Схожість з еталоном: ${simPct}% (замало)`;
+  }
+
+  // Part 3
+  const p3Lines = v.open.map((q,i)=>{
+    const userText = (document.getElementById(`open-ta-${i}`)?.value||'').trim()||'(відповідь не надана)';
+    const inputCount = state.openInputCount?.[i]||0;
+    const earned = state.p3SelfScores[i];
+    const reason = scoreReason(userText, q.model, q.criteria, inputCount);
+    const critResults = matchedCriteria(userText, q.criteria);
+    const critStr = critResults.map(c=>`      ${c.matched?'[+]':'[ ]'} ${c.text}`).join('\n');
+    return [
+      `  ▸ Питання ${i+1} з ${v.open.length}`,
+      `  ${q.q.replace(/\n/g,' ')}`,
+      `  ${'─'.repeat(46)}`,
+      `  Відповідь учня:`,
+      `    ${userText.replace(/\n/g,'\n    ')}`,
+      `  Критерії перевірки:`,
+      critStr,
+      `  Підсумок: ${reason} → ${earned?'БАЛ ЗАРАХОВАНО ✓':'БАЛ НЕ ЗАРАХОВАНО ✗'}`
+    ].join('\n');
+  }).join('\n\n');
+
+  // Part 4
+  const p4Lines = v.cases.map((c,i)=>{
+    const userText = (document.getElementById(`case-ta-${i}`)?.value||'').trim()||'(відповідь не надана)';
+    const inputCount = state.caseInputCount?.[i]||0;
+    const earned = state.p4SelfScores[i];
+    const reason = scoreReason(userText, c.model, c.checks, inputCount);
+    const critResults = matchedCriteria(userText, c.checks);
+    const critStr = critResults.map(cr=>`      ${cr.matched?'[+]':'[ ]'} ${cr.text}`).join('\n');
+    return [
+      `  ▸ ${c.title}`,
+      `  ${c.q.replace(/\n/g,' ')}`,
+      `  ${'─'.repeat(46)}`,
+      `  Відповідь учня:`,
+      `    ${userText.replace(/\n/g,'\n    ')}`,
+      `  Критерії перевірки:`,
+      critStr,
+      `  Підсумок: ${reason} → ${earned?'БАЛ ЗАРАХОВАНО ✓':'БАЛ НЕ ЗАРАХОВАНО ✗'}`
+    ].join('\n');
+  }).join('\n\n');
+
+  const txt =
+`${line}
+📋 ЗВІТ ДЛЯ ВЧИТЕЛЯ — КОНТРОЛЬНА РОБОТА
+   Правознавство, 9 клас
+${line}
+  Учень/учениця : ${state.studentName}
+  Клас           : ${state.studentClass}
+  Варіант        : ${state.variantLabel}
+  Дата та час   : ${now}
+  Час виконання : ${timeStr}
+${line}
+ЗАГАЛЬНИЙ РЕЗУЛЬТАТ:
+  Ч.1 Тести + Ч.2 Відповідність : ${state.p1Score+state.p2Score} / 13  (авто ✓)
+  Ч.3 Відкриті питання           : ${state.p3Score} / 5   (авто, перевірте)
+  Ч.4 Практичні кейси            : ${state.p4Score} / 7   (авто, перевірте)
+${dash}
+  ЗАГАЛОМ : ${total} / 25 балів
+  ОЦІНКА  : ${grade} / 12
+${line}
+ЧАСТИНА 3 — ВІДКРИТІ ПИТАННЯ
+Ч.1 і Ч.2 перевірено автоматично — не потребують перегляду.
+[+] = критерій виявлено у відповіді учня  /  [ ] = не виявлено
+${dash}
+${p3Lines}
+${line}
+ЧАСТИНА 4 — ПРАКТИЧНІ КЕЙСИ
+[+] = критерій виявлено у відповіді учня  /  [ ] = не виявлено
+${dash}
+${p4Lines}
+${line}`;
+
+  document.getElementById('share-text').value = txt;
+  state.reportText = txt;
+}
+
+/* ════════════════════════════════
+   TELEGRAM — Apps Script Webhook
+   Токен зберігається ТІЛЬКИ на сервері Apps Script.
+   HTML-файл надсилає лише текст звіту.
+════════════════════════════════ */
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX6T7bqjLYQ7dPT5NyT2jY2AllfevRLpbQ3ijDbxJiREaDLmxDSHgR-by6y0WuIOWp/exec';
+
+async function sendReportToTelegram(reportText){
+  const statusTitle = document.getElementById('tg-title');
+  const statusDesc  = document.getElementById('tg-desc');
+  const statusIcon  = document.getElementById('tg-icon');
+  const spinner     = document.getElementById('tg-spinner');
+  const fallback    = document.getElementById('tg-fallback');
+  const statusBlock = document.getElementById('tg-status-block');
+
+  function setStatus(icon, title, desc, color, showFallback, hideSpin){
+    statusIcon.textContent = icon;
+    statusTitle.textContent = title;
+    statusTitle.style.color = color || 'var(--text)';
+    statusDesc.textContent  = desc;
+    if(hideSpin) spinner.style.display = 'none';
+    if(showFallback) fallback.style.display = 'block';
+  }
+
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        report: reportText,
+        student: state.studentName,
+        cls: state.studentClass,
+        variant: state.variantLabel
+      })
+    });
+    const data = await resp.json().catch(()=>({}));
+    if(resp.ok && data.ok !== false){
+      setStatus('✅','Звіт надіслано вчителю!',
+        'Результати автоматично з\'явились у Telegram вчителя.',
+        'var(--ok)', false, true);
+      statusBlock.style.borderColor = 'var(--ok)';
+    } else {
+      throw new Error(data.error || `HTTP ${resp.status}`);
+    }
+  } catch(err){
+    console.warn('Telegram send failed:', err);
+    setStatus('⚠️','Не вдалося надіслати автоматично',
+      'Будь ласка, скопіюйте звіт нижче і надішліть вчителю вручну.',
+      'var(--gold)', true, true);
+    statusBlock.style.borderColor = 'var(--gold)';
+  }
+}
+
+function copyResult(){
+  const ta = document.getElementById('share-text');
+  ta.select();
+  ta.setSelectionRange(0,99999);
+  try{ navigator.clipboard.writeText(ta.value); }catch(e){ document.execCommand('copy'); }
+  alert('✅ Результат скопійовано! Вставте його у повідомлення вчителю.');
+}
+
+function printResult(){
+  window.print();
+}
+
+/* ════════════════════════════════
+   TEACHER JOURNAL (localStorage)
+════════════════════════════════ */
+function saveResult(total,grade,elapsed){
+  try{
+    const key = `quiz_result_${Date.now()}`;
+    const val = {
+      name: state.studentName,
+      cls: state.studentClass,
+      variant: state.variantLabel,
+      p1: state.p1Score, p2: state.p2Score, p3: state.p3Score, p4: state.p4Score,
+      total, grade, elapsed,
+      date: new Date().toLocaleString('uk-UA')
+    };
+    localStorage.setItem(key, JSON.stringify(val));
+  }catch(e){}
+}
+
+function openJournal(){
+  const body = document.getElementById('journal-body');
+  const results = [];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith('quiz_result_')){
+      try{ results.push({key:k,...JSON.parse(localStorage.getItem(k))}); }catch(e){}
+    }
+  }
+  results.sort((a,b)=>b.key.localeCompare(a.key));
+  if(!results.length){
+    body.innerHTML='<div class="journal-empty">Журнал порожній. Результати з\'являться після проходження тесту.</div>';
+  } else {
+    body.innerHTML = `
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">Результати зберігаються на цьому пристрої. Учні на інших пристроях надсилають результат копіюванням.</div>
+      ${results.map(r=>`
+        <div class="journal-row">
+          <div>
+            <div class="jr-name">${escHtml(r.name)} <span style="font-size:11px;color:var(--gold)">${escHtml(r.cls||'')}</span></div>
+            <div style="font-size:11px;color:var(--muted)">${r.date} · ${Math.floor(r.elapsed/60)} хв</div>
+          </div>
+          <div class="jr-var">${r.variant}</div>
+          <div class="jr-pts">${r.total}/25</div>
+          <div class="jr-grade" style="color:${GRADE_COLORS[(r.grade||1)-1]}">${r.grade}</div>
+        </div>`).join('')}`;
+  }
+  document.getElementById('journal-modal').classList.add('open');
+}
+
+function closeJournal(){
+  document.getElementById('journal-modal').classList.remove('open');
+}
+
+function clearJournal(){
+  if(!confirm('Видалити всі збережені результати з цього пристрою?')) return;
+  const keys=[];
+  for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k.startsWith('quiz_result_'))keys.push(k);}
+  keys.forEach(k=>localStorage.removeItem(k));
+  closeJournal();
+  alert('Журнал очищено.');
+}
+
+function exportJournal(){
+  const results=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k.startsWith('quiz_result_')){
+      try{results.push(JSON.parse(localStorage.getItem(k)));}catch(e){}
+    }
+  }
+  results.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  const txt = `ЖУРНАЛ РЕЗУЛЬТАТІВ — Правознавство 9 клас\n${'═'.repeat(60)}\n`+
+    results.map(r=>`${r.name} | ${r.cls||''} | ${r.variant} | ${r.total}/25 | Оцінка: ${r.grade} | ${r.date}`).join('\n');
+  try{ navigator.clipboard.writeText(txt); alert('Журнал скопійовано!'); }
+  catch(e){ alert(txt); }
+}
+
+/* ════════════════════════════════
+   UTILS
+════════════════════════════════ */
+function escHtml(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>').replace(/"/g,'&quot;');
+}
+
+// Enter on name/class fields
+document.getElementById('student-name').addEventListener('keydown',e=>{
+  if(e.key==='Enter') document.getElementById('student-class').focus();
+});
+document.getElementById('student-class').addEventListener('keydown',e=>{
+  if(e.key==='Enter') startQuiz();
+});
+</script>
+</body>
+</html>
