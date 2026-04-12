@@ -308,7 +308,6 @@ body{font-family:'Open Sans',sans-serif;background:var(--navy);color:var(--text)
       <li>Тести перевіряються автоматично з поясненням одразу після вибору</li>
       <li>Відповідність перевіряється після завершення роботи</li>
       <li>Для відкритих питань і кейсів — напишіть відповідь, натисніть <strong style="color:var(--text)">«Надіслати відповідь»</strong>, потім переглядайте зразок</li>
-      <li>Після завершення — скопіюйте звіт і надішліть вчителю</li>
     </ul>
   </div>
 
@@ -1460,7 +1459,7 @@ async function sendReportToTelegram(reportText){
   try {
     await fetch(APPS_SCRIPT_URL, {
       method : 'POST',
-      mode   : 'no-cors',          // ← ключовий параметр
+      mode   : 'no-cors',
       headers: {'Content-Type':'application/json'},
       body   : JSON.stringify({
         report : reportText,
@@ -1469,13 +1468,12 @@ async function sendReportToTelegram(reportText){
         variant: state.variantLabel
       })
     });
-    // With no-cors we cannot read response — assume success if no network error
+    // no-cors — відповідь opaque, вважаємо успіхом якщо немає мережевої помилки
     setStatus('✅','Звіт надіслано вчителю!',
       'Результати автоматично з\'явились у Telegram вчителя.',
       'var(--ok)', false, true);
     statusBlock.style.borderColor = 'var(--ok)';
-    // Also show fallback copy just in case
-    fallback.style.display = 'block';
+    // fallback НЕ показуємо — відправка успішна
   } catch(err){
     console.warn('Telegram send failed:', err.message);
     setStatus('⚠️','Проблема з\'єднання',
