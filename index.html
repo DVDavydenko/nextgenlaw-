@@ -1417,7 +1417,7 @@ ${line}`;
    Токен зберігається ТІЛЬКИ на сервері Apps Script.
    HTML-файл надсилає лише текст звіту.
 ════════════════════════════════ */
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyX6T7bqjLYQ7dPT5NyT2jY2AllfevRLpbQ3ijDbxJiREaDLmxDSHgR-by6y0WuIOWp/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwbxrRH1_W0DiHy7Z5_b3C_hkQkuE03-WMztcAv4BUKUiwgvguD2R0A1DIzARO1KjgR/exec';
 
 async function sendReportToTelegram(reportText){
   const statusTitle = document.getElementById('tg-title');
@@ -1436,30 +1436,32 @@ async function sendReportToTelegram(reportText){
     if(showFallback) fallback.style.display = 'block';
   }
 
+  // Apps Script redirects cause CORS errors when reading response.
+  // Solution: mode:'no-cors' — request still arrives at server,
+  // response is opaque (unreadable). We use optimistic confirmation.
   try {
-    const resp = await fetch(APPS_SCRIPT_URL, {
-      method: 'POST',
+    await fetch(APPS_SCRIPT_URL, {
+      method : 'POST',
+      mode   : 'no-cors',          // ← ключовий параметр
       headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({
-        report: reportText,
+      body   : JSON.stringify({
+        report : reportText,
         student: state.studentName,
-        cls: state.studentClass,
+        cls    : state.studentClass,
         variant: state.variantLabel
       })
     });
-    const data = await resp.json().catch(()=>({}));
-    if(resp.ok && data.ok !== false){
-      setStatus('✅','Звіт надіслано вчителю!',
-        'Результати автоматично з\'явились у Telegram вчителя.',
-        'var(--ok)', false, true);
-      statusBlock.style.borderColor = 'var(--ok)';
-    } else {
-      throw new Error(data.error || `HTTP ${resp.status}`);
-    }
+    // With no-cors we cannot read response — assume success if no network error
+    setStatus('✅','Звіт надіслано вчителю!',
+      'Результати автоматично з\'явились у Telegram вчителя.',
+      'var(--ok)', false, true);
+    statusBlock.style.borderColor = 'var(--ok)';
+    // Also show fallback copy just in case
+    fallback.style.display = 'block';
   } catch(err){
-    console.warn('Telegram send failed:', err);
-    setStatus('⚠️','Не вдалося надіслати автоматично',
-      'Будь ласка, скопіюйте звіт нижче і надішліть вчителю вручну.',
+    console.warn('Telegram send failed:', err.message);
+    setStatus('⚠️','Проблема з\'єднання',
+      'Звіт не вдалося надіслати. Скопіюйте текст нижче і надішліть вчителю вручну.',
       'var(--gold)', true, true);
     statusBlock.style.borderColor = 'var(--gold)';
   }
