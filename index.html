@@ -1394,6 +1394,31 @@ function buildShareText(total,grade,timeStr){
     ].join('\n');
   }).join('\n\n');
 
+  // Journal — all results stored in localStorage on this device
+  const journalEntries = [];
+  try{
+    for(let i=0;i<localStorage.length;i++){
+      const k = localStorage.key(i);
+      if(k.startsWith('quiz_result_')){
+        try{ journalEntries.push(JSON.parse(localStorage.getItem(k))); }catch(e){}
+      }
+    }
+    journalEntries.sort((a,b)=>new Date(b.date)-new Date(a.date));
+  }catch(e){}
+
+  const journalLines = journalEntries.length
+    ? journalEntries.map((r,i)=>{
+        const mins = Math.floor((r.elapsed||0)/60);
+        const secs = (r.elapsed||0) % 60;
+        const timeSpent = `${mins}хв ${String(secs).padStart(2,'0')}с`;
+        return [
+          `  ${i+1}. ${r.name}  [${r.cls||'—'}]  ${r.variant}`,
+          `     Бали: ${r.p1}/8 + ${r.p2}/5 + ${r.p3}/5 + ${r.p4}/7 = ${r.total}/25  |  Оцінка: ${r.grade}/12`,
+          `     Час: ${timeSpent}  |  ${r.date}`
+        ].join('\n');
+      }).join('\n\n')
+    : '  (журнал порожній)';
+
   const txt =
 `${line}
 📋 ЗВІТ ДЛЯ ВЧИТЕЛЯ — КОНТРОЛЬНА РОБОТА
@@ -1423,6 +1448,10 @@ ${line}
 [+] = критерій виявлено у відповіді учня  /  [ ] = не виявлено
 ${dash}
 ${p4Lines}
+${line}
+ЖУРНАЛ РЕЗУЛЬТАТІВ (всі учні на цьому пристрої)
+${dash}
+${journalLines}
 ${line}`;
 
   document.getElementById('share-text').value = txt;
@@ -1514,6 +1543,8 @@ function saveResult(total,grade,elapsed){
 }
 
 function openJournal(){
+  const pwd = prompt('🔑 Введіть пароль:');
+  if(pwd !== '2234562'){ if(pwd!==null) alert('Невірний пароль.'); return; }
   const body = document.getElementById('journal-body');
   const results = [];
   for(let i=0;i<localStorage.length;i++){
